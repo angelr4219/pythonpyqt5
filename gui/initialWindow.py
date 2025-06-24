@@ -23,7 +23,7 @@ class InitialWindow(QMainWindow):
         layout.addWidget(default_btn)
         layout.addWidget(custom_btn)
 
-        default_btn.clicked.connect(partial(self.launch_main_window, "fullstack/assets/Defaults.xml"))
+        default_btn.clicked.connect(partial(self.launch_main_window, "/Users/angelramirez/Desktop/Desktop- Angel's Mac-Mini/Code/python pyqt5/fullstack/assets/Defaults.xml"))
         custom_btn.clicked.connect(self.select_custom_xml)
 
     def select_custom_xml(self):
