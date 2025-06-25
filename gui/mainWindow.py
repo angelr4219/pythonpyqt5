@@ -69,14 +69,14 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, "Saved", f"Saved to {file_path}")
         
     def add_parameter_widgets(self, element, layout, prefix=""):
+         # Recursively add widgets for each parameter in the XML element.
          for child in element:
             full_path = f"{prefix}/{child.tag}" if prefix else child.tag
 
             # If child has sub-elements → create collapsible group
             if list(child):
                 group_box = QGroupBox(child.tag)
-                group_box.setCheckable(True)
-                group_box.setChecked(True)
+                
                 group_layout = QVBoxLayout()
                 group_box.setLayout(group_layout)
                 layout.addWidget(group_box)
@@ -93,19 +93,26 @@ class MainWindow(QMainWindow):
                 font.setBold(True)
                 label.setFont(font)
 
+
+# Create input field based on the type attribute
                 input_field = QLineEdit(child.attrib["value"])
+                input_field.setEnabled(True)
                 input_field.setToolTip(f"Expected type: {child.attrib.get('type', 'string')}")
-                input_field.textChanged.connect(lambda val, e=child, l=input_field: (
-                    e.set("value", val), self.validate_input(val, e.attrib.get('type', 'string'), l))
+                input_field.textChanged.connect(
+                    lambda val, path=full_path, field_type=child.attrib.get('type', 'string'), widget=input_field:
+                    self.edit_value(path, val, field_type, widget)
                 )
+
 
                 row_layout.addWidget(label)
                 row_layout.addWidget(input_field)
                 layout.addWidget(row)
+
+
     def edit_value(self, path, new_value: str, field_type: str, widget: QLineEdit):
         try:
             # Validate type
-            if field_type == "int" or field_type == "long":
+            if field_type in ("int", "long"):
                 int(new_value)
             elif field_type == "double":
                 float(new_value)
@@ -113,11 +120,14 @@ class MainWindow(QMainWindow):
                 if new_value.lower() not in ("true", "false"):
                     raise ValueError()
 
-            # If valid, update XML using manager
-            self.xml_manager.update_value(path, new_value)
-            widget.setStyleSheet("")
+            # Find and update the node
+            node = self.xml_manager.root.find(path)
+            if node is not None:
+                node.set("value", new_value)
+
+            widget.setStyleSheet("QLineEdit { background-color: white; }")
+            widget.setToolTip(f"Expected type: {field_type}")
+
         except ValueError:
-            widget.setStyleSheet("background-color: #ffcccc")
-
-
-  
+            widget.setStyleSheet("QLineEdit { background-color: #ffcccc; }")
+            widget.setToolTip(f"Invalid {field_type} value")
