@@ -131,3 +131,9 @@ class MainWindow(QMainWindow):
         except ValueError:
             widget.setStyleSheet("QLineEdit { background-color: #ffcccc; }")
             widget.setToolTip(f"Invalid {field_type} value")
+    def edit_section(self, index):
+                selected_element = self.root[index]
+                new_tag, ok = QInputDialog.getText(self, "Edit Section", "Enter new tag name:", QLineEdit.Normal, selected_element.tag)
+                if ok and new_tag:
+                    selected_element.tag = new_tag
+                    self.combo.setItemText(index, new_tag)       
