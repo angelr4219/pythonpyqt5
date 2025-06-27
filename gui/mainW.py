@@ -16,12 +16,12 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("XML Editor GUI")
         self.setGeometry(100, 100, 900, 600)
 
-        self._create_menu()
-        self._create_widgets()
-        self._create_layout()
-        self._create_status_bar()
+        self.create_menu()
+        self.create_widgets()
+        self.create_layout()
+        self.create_status_bar()
 
-    def _create_menu(self):
+    def create_menu(self):
         menubar = self.menuBar()
         file_menu = menubar.addMenu("File")
 
@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
         open_action.triggered.connect(self._open_xml)
         save_action.triggered.connect(self._save_xml)
 
-    def _create_widgets(self):
+    def create_widgets(self):
         self.tree = QTreeWidget()
         self.tree.setHeaderLabels(["Tag", "Attributes"])
 
@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
         self.add_btn = QPushButton("Add Element")
         self.del_btn = QPushButton("Delete Element")
 
-    def _create_layout(self):
+    def create_layout(self):
         editor = QWidget()
         editor_layout = QVBoxLayout()
 
@@ -75,15 +75,15 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(splitter)
 
-    def _create_status_bar(self):
+    def create_status_bar(self):
         self.status = QStatusBar()
         self.setStatusBar(self.status)
 
-    def _open_xml(self):
+    def open_xml(self):
         # Placeholder
         self.status.showMessage("Open XML clicked")
 
-    def _save_xml(self):
+    def save_xml(self):
         # Placeholder
         self.status.showMessage("Save XML clicked")
 
