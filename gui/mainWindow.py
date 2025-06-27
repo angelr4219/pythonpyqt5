@@ -1,50 +1,111 @@
-# gui/main_window.py
-from PyQt5.QtWidgets import QMainWindow, QGroupBox, QWidget, QVBoxLayout, QPushButton, QLabel, QComboBox, QScrollArea, QLineEdit, QFileDialog, QMessageBox,QMenuBar, QAction, QFontDialog ,QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QCheckBox
-from PyQt5.QtCore import Qt
 from logic.xmlManager import XMLManager
+from PyQt5.QtWidgets import QMainWindow, QGroupBox, QWidget, QVBoxLayout, QPushButton, QLabel, QComboBox, QScrollArea, QLineEdit,  QMessageBox,QMenuBar, QAction, QFontDialog ,QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QCheckBox, QFileDialog, QTreeWidgetItem
 from gui.layerWindow import LayerWindow
-from xml.etree.ElementTree import Element 
+from xml.etree.ElementTree import Element
 
 class MainWindow(QMainWindow):
     def __init__(self, xml_path):
         super().__init__()
-        self.setWindowTitle("Edit Simulation Parameters")
-        self.resize(800, 600)
-        # Initialize the main window with a title and size.
+        self.setWindowTitle("XML Editor GUI")
+        self.setGeometry(100, 100, 900, 600)
 
-        self.xml_path = xml_path
+
         self.xml_manager = XMLManager()
+        self.xml_path = xml_path
         self.xml_manager.load_file(xml_path)
-        # Load the XML file using the XMLManager.
-
+        #loads the XML file using the XMLManager class.
         self.root = self.xml_manager.root
-        # Get the root element of the XML file.
+        # gets the root element of the XML file.
 
-        self.central = QWidget()
-        self.setCentralWidget(self.central)
-        self.layout = QVBoxLayout(self.central)
-        # Create a central widget and layout for the main window.
+        
+
+        self.create_menu()
+        self.create_widgets()
+        self.create_layout()
+        self.create_status_bar()
 
         self.combo = QComboBox()
         self.combo.addItems([child.tag for child in self.root])
         self.combo.currentIndexChanged.connect(self.display_section)
-        self.layout.addWidget(self.combo)
-        # Create a combo box to select different sections of the XML file.
+
+        
+
+    def open_xml_file(self):
+        filepath, _ = QFileDialog.getOpenFileName(self, "Open XML File", "", "XML Files (*.xml)")
+        if filepath:
+            self.xml_manager.load_file(filepath)
+            self.current_file = filepath
+            self.tree.clear()
+            self.populate_tree()
+            self.status.showMessage(f"Loaded: {filepath}")
+
+    def save_xml(self):
+        if not self.current_file:
+            filepath, _ = QFileDialog.getSaveFileName(self, "Save XML File", "", "XML Files (*.xml)")
+        else:
+            filepath = self.current_file
+        if filepath:
+            self.xml_manager.save_file(filepath)
+            self.status.showMessage(f"Saved to: {filepath}")
+
+    def populate_tree(self):
+        def add_items(parent_widget, parent_elem):
+            for child in parent_elem:
+                tag, attrs = self.xml_manager.get_element_info(child)
+                item = QTreeWidgetItem([tag, attrs])
+                parent_widget.addChild(item)
+                add_items(item, child)
+
+        root = self.xml_manager.get_element_tree()
+        if root is not None:
+            top = QTreeWidgetItem([root.tag, ""])
+            self.tree.addTopLevelItem(top)
+            add_items(top, root)
+            self.tree.expandAll()
+
+    def create_menu(self):
+        menubar = self.menuBar()
+
+        # File Menu
+        file_menu = menubar.addMenu("File")
+        open_action = QAction("Open XML", self)
+        save_action = QAction("Save XML As...", self)
+
+        open_action.triggered.connect(self.open_xml_file)
+        save_action.triggered.connect(self.save_xml)
+
+        file_menu.addAction(open_action)
+        file_menu.addAction(save_action)
+
+
+    def create_widgets(self):
+        self.combo = QComboBox()
+        self.combo.addItems([child.tag for child in self.root])
+        self.combo.currentIndexChanged.connect(self.display_section)
 
         self.scroll_area = QScrollArea()
         self.scroll_widget = QWidget()
         self.scroll_layout = QVBoxLayout(self.scroll_widget)
         self.scroll_area.setWidget(self.scroll_widget)
         self.scroll_area.setWidgetResizable(True)
-        self.layout.addWidget(self.scroll_area)
-        # Create a scroll area to display the contents of the selected section.
 
         self.save_btn = QPushButton("Save XML")
         self.save_btn.clicked.connect(self.save_xml)
+
+    def create_layout(self):
+        self.central = QWidget()
+        self.setCentralWidget(self.central)
+
+        self.layout = QVBoxLayout(self.central)
+        self.layout.addWidget(self.combo)
+        self.layout.addWidget(self.scroll_area)
         self.layout.addWidget(self.save_btn)
 
-        self.display_section(0)
-
+        self.display_section(0)  # Load initial content
+    def create_status_bar(self):
+        self.status = self.statusBar()
+        self.status.showMessage("Ready")
+    
     def display_section(self, index):
         for i in reversed(range(self.scroll_layout.count())):
             self.scroll_layout.itemAt(i).widget().deleteLater()
@@ -57,17 +118,7 @@ class MainWindow(QMainWindow):
             edit_btn = QPushButton("Edit Layers")
             edit_btn.clicked.connect(self.open_layer_editor)
             self.scroll_layout.addWidget(edit_btn)
-
-    def open_layer_editor(self):
-        self.layer_window = LayerWindow(self.xml_manager)
-        self.layer_window.show()
-
-    def save_xml(self):
-        file_path, _ = QFileDialog.getSaveFileName(self, "Save XML File", "", "XML Files (*.xml)")
-        if file_path:
-            self.xml_manager.save_file(file_path)
-            QMessageBox.information(self, "Saved", f"Saved to {file_path}")
-        
+    
     def add_parameter_widgets(self, element, layout, prefix=""):
          # Recursively add widgets for each parameter in the XML element.
          for child in element:
@@ -94,46 +145,6 @@ class MainWindow(QMainWindow):
                 label.setFont(font)
 
 
-# Create input field based on the type attribute
-                input_field = QLineEdit(child.attrib["value"])
-                input_field.setEnabled(True)
-                input_field.setToolTip(f"Expected type: {child.attrib.get('type', 'string')}")
-                input_field.textChanged.connect(
-                    lambda val, path=full_path, field_type=child.attrib.get('type', 'string'), widget=input_field:
-                    self.edit_value(path, val, field_type, widget)
-                )
 
 
-                row_layout.addWidget(label)
-                row_layout.addWidget(input_field)
-                layout.addWidget(row)
-
-
-    def edit_value(self, path, new_value: str, field_type: str, widget: QLineEdit):
-        try:
-            # Validate type
-            if field_type in ("int", "long"):
-                int(new_value)
-            elif field_type == "double":
-                float(new_value)
-            elif field_type == "bool":
-                if new_value.lower() not in ("true", "false"):
-                    raise ValueError()
-
-            # Find and update the node
-            node = self.xml_manager.root.find(path)
-            if node is not None:
-                node.set("value", new_value)
-
-            widget.setStyleSheet("QLineEdit { background-color: white; }")
-            widget.setToolTip(f"Expected type: {field_type}")
-
-        except ValueError:
-            widget.setStyleSheet("QLineEdit { background-color: #ffcccc; }")
-            widget.setToolTip(f"Invalid {field_type} value")
-    def edit_section(self, index):
-                selected_element = self.root[index]
-                new_tag, ok = QInputDialog.getText(self, "Edit Section", "Enter new tag name:", QLineEdit.Normal, selected_element.tag)
-                if ok and new_tag:
-                    selected_element.tag = new_tag
-                    self.combo.setItemText(index, new_tag)       
+    
