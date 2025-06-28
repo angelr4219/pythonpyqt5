@@ -2,9 +2,9 @@
 <Root>
 
 	<XmlEditorSettings>
-		<LastCifFile value="/Users/angelramirez/Downloads/PythonInterface/DotArray2.cif" type="string"/>
-		<LastSaveFile value="/Users/angelramirez/Downloads/PythonInterface/Defaults.xml" type="string"/>
-		<LastXMLFile value="/Users/angelramirez/Downloads/PythonInterface/Defaults.xml" type="string"/>
+		<LastCifFile value="/Users/angelramirez/Downloads/PythonInterface/testing.xml" type="string"/>
+		<LastSaveFile value="/Users/angelramirez/Downloads/PythonInterface/testing.xml" type="string"/>
+		<LastXMLFile value="/Users/angelramirez/Downloads/PythonInterface/testing.xml" type="string"/>
 		<Font value="Ubuntu" type="string"/>
 		<FontSize value="8" type="int"/>
 		<GateBias>
