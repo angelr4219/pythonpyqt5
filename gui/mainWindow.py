@@ -44,6 +44,7 @@ class MainWindow(QMainWindow):
         self.main_btn = QPushButton("Main")
         self.layer_btn = QPushButton("Edit Layers")
         self.material_btn = QPushButton("Material Lookup")
+        
 
         views = {
             self.main_btn: 0,

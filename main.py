@@ -4,6 +4,7 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from gui.initialWindow import InitialWindow
 from gui.mainWindow import MainWindow
+from logic.xmlManager import XMLManager
 
 
 if __name__ == "__main__":
@@ -13,5 +14,8 @@ if __name__ == "__main__":
     window = InitialWindow()
  #  window = MainWindow("/Users/angelramirez/Desktop/Desktop- Angel's Mac-Mini/Code/python pyqt5/fullstack/assets/something.xml")
     window.show()
+    # For testing purposes, you can directly create a MainWindow instance
+    
+    
     sys.exit(app.exec_())
 

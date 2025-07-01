@@ -18,10 +18,10 @@ class XMLManager:
         return ET.tostring(self.root, pretty_print=True, encoding='unicode')
 
     def get_layers(self):
-        return self.root.find(".//LayeredStructure").findall("Layer")
+        return self.root.find("./LayeredStructure").findall("Layer")
 
     def get_materials(self):
-        return self.root.find(".//MaterialList").findall("Material")
+        return self.root.find("./MaterialList").findall("Material")
 
     def update_layer(self, index, key, value):
         layers = self.get_layers()
