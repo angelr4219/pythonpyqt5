@@ -1,9 +1,9 @@
 # gui/initial_window.py
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QPushButton, QWidget, QFileDialog,QLabel
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QPushButton, QWidget, QFileDialog,QLabel ,QMessageBox
 from functools import partial
 from gui.mainWindow import MainWindow
 from PyQt5.QtCore import Qt
-
+from logic.xmlManager import XMLManager  # if not already imported
 
 
 class InitialWindow(QMainWindow):
@@ -31,10 +31,31 @@ class InitialWindow(QMainWindow):
         default_btn.clicked.connect(partial(self.launch_main_window, "assets/Defaults.xml"))
         custom_btn.clicked.connect(self.select_custom_xml)
 
+        self.check_last_file()
+
     def select_custom_xml(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Open XML File", "", "XML Files (*.xml)")
         if file_path:
             self.launch_main_window(file_path)
+    
+    def check_last_file(self):
+        # Load Defaults.xml using XMLManager
+        self.settings = XMLManager()
+        self.settings.load_file("assets/Defaults.xml")
+
+        node = self.settings.root.find(".//LastXMLFile")
+        last_path = node.attrib.get("value", "") if node is not None else ""
+
+        if last_path:
+            reply = QMessageBox.question(
+                self,
+                "Reopen Last File?",
+                f"Reopen last edited file?\n\n{last_path}",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.Yes
+            )
+            if reply == QMessageBox.Yes:
+                self.launch_main_window(last_path)
 
     def launch_main_window(self, xml_path):
         print(f"Launching with: {xml_path}")

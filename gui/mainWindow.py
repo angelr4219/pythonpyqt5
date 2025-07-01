@@ -4,8 +4,13 @@ from PyQt5.QtWidgets import (
     QHBoxLayout, QLabel, QTextEdit, QMessageBox, QStackedLayout
 )
 from logic.xmlManager import XMLManager
-from gui.layerEditor import LayerEditorWidget
-from gui.materialLookup import MaterialLookupWidget
+
+from logic.layerEditor import LayerEditorWidget
+from gui.layerWindow import LayerWindow
+
+from logic.materialLookup import MaterialLookupWidget
+from gui.materialsWindow import MaterialDialog
+
 from functools import partial
 
 class MainWindow(QMainWindow):
@@ -66,8 +71,8 @@ class MainWindow(QMainWindow):
         self.file_name = path.replace(".xml", "_edited.xml")
         self.main_view.setPlainText(self.manager.dump_pretty())
 
-        self.layer_view.load_data(self.manager)
-        self.material_view.load_data(self.manager)
+        #self.layer_view.load_data(self.manager)
+        #self.material_view.load_data(self.manager)
 
     def save_xml(self):
         path, _ = QFileDialog.getSaveFileName(self, "Save XML", self.file_name, "XML Files (*.xml)")

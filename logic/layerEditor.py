@@ -1,13 +1,17 @@
 
-# gui/layer_editor.py
+# logic/layer_editor.py
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QGroupBox, QFormLayout, QLabel, QLineEdit
 
 class LayerEditorWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.manager = None
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
+        if self.layout() is None:
+            self.layout = QVBoxLayout()
+            self.setLayout(self.layout)
+        else:
+            self.layout = self.layout()
+
 
     def load_data(self, manager):
         self.manager = manager

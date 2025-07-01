@@ -1,40 +1,51 @@
-
 # gui/layer_window.py
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QFormLayout, QLabel, QLineEdit, QComboBox, QPushButton, QMessageBox
 
-class LayerWindow(QWidget):
-    def __init__(self, xml_manager):
+class LayerWindow(QDialog):
+    def __init__(self, layer_data, materials, callback, index):
         super().__init__()
-        self.setWindowTitle("Edit Layers")
-        self.resize(400, 300)
-        self.xml_manager = xml_manager
+        self.setWindowTitle(f"Edit Layer {index + 1}")
+        self.callback = callback
+        self.index = index
 
         self.layout = QVBoxLayout()
+        self.form = QFormLayout()
+
+        self.name_input = QLineEdit(layer_data.get("name", ""))
+        self.material_input = QComboBox()
+        self.material_input.addItems(materials)
+        self.material_input.setCurrentText(layer_data.get("materialType", ""))
+        self.height_input = QLineEdit(layer_data.get("height", ""))
+        self.density_input = QLineEdit(layer_data.get("panelDensity", ""))
+        self.wave_type_input = QLineEdit(layer_data.get("localWaveCalcType", ""))
+
+        self.form.addRow("Name:", self.name_input)
+        self.form.addRow("Material:", self.material_input)
+        self.form.addRow("Height:", self.height_input)
+        self.form.addRow("Panel Density:", self.density_input)
+        self.form.addRow("Wave Calc Type:", self.wave_type_input)
+
+        self.save_btn = QPushButton("Save")
+        self.save_btn.clicked.connect(self.save_changes)
+
+        self.layout.addLayout(self.form)
+        self.layout.addWidget(self.save_btn)
         self.setLayout(self.layout)
 
-        self.layers = self.xml_manager.root.find("LayeredStructure").findall("Layer")
+    def save_changes(self):
+        try:
+            float(self.height_input.text())
+            float(self.density_input.text())
+        except ValueError:
+            QMessageBox.critical(self, "Invalid Input", "Height and Density must be numeric.")
+            return
 
-        for layer in self.layers:
-            self.add_layer_editor(layer)
-
-        self.save_btn = QPushButton("Save and Close")
-        self.save_btn.clicked.connect(self.close)
-        self.layout.addWidget(self.save_btn)
-
-    def add_layer_editor(self, layer_elem):
-        group = QVBoxLayout()
-
-        for tag in ["name", "materialType", "height", "panelDensity", "localWaveCalcType"]:
-            child = layer_elem.find(tag)
-            if child is not None:
-                row = QHBoxLayout()
-                row.addWidget(QLabel(f"{tag}:"))
-                field = QLineEdit(child.attrib.get("value", ""))
-                field.textChanged.connect(lambda val, elem=child: elem.set("value", val))
-                row.addWidget(field)
-                group.addLayout(row)
-
-        container = QWidget()
-        container.setLayout(group)
-        self.layout.addWidget(container)
+        updated = {
+            "name": self.name_input.text(),
+            "materialType": self.material_input.currentText(),
+            "height": self.height_input.text(),
+            "panelDensity": self.density_input.text(),
+            "localWaveCalcType": self.wave_type_input.text(),
+        }
+        self.callback(self.index, updated)
+        self.accept()
