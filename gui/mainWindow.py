@@ -19,12 +19,15 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("DotArray2 XML Editor")
         self.setGeometry(200, 100, 900, 700)
         self.manager = XMLManager()
-        self.file_name = "edited.xml"
+        self.file_name = xml_path.replace(".xml", "_edited.xml")
+        self.manager.load_file(xml_path)
 
         self.initUI()
+        self.load_views()
 
     def initUI(self):
         layout = QVBoxLayout()
+
         self.file_button = QPushButton("Load XML File")
         self.file_button.clicked.connect(self.load_xml)
 
@@ -44,7 +47,6 @@ class MainWindow(QMainWindow):
         self.main_btn = QPushButton("Main")
         self.layer_btn = QPushButton("Edit Layers")
         self.material_btn = QPushButton("Material Lookup")
-        
 
         views = {
             self.main_btn: 0,
@@ -63,6 +65,11 @@ class MainWindow(QMainWindow):
         central = QWidget()
         central.setLayout(layout)
         self.setCentralWidget(central)
+    
+    def load_views(self):
+        self.main_view.setPlainText(self.manager.dump_pretty())
+        self.layer_view.load_data(self.manager)
+        self.material_view.load_data(self.manager)
 
     def load_xml(self):
         path, _ = QFileDialog.getOpenFileName(self, "Open XML", "", "XML Files (*.xml)")

@@ -28,7 +28,7 @@ class InitialWindow(QMainWindow):
         layout.addWidget(custom_btn)
         layout.addWidget(self.label)
 
-        default_btn.clicked.connect(partial(self.launch_main_window, "assets/Defaults.xml"))
+        default_btn.clicked.connect(partial(self.launch_main_window, "/Users/angelramirez/Desktop/Desktop- Angel's Mac-Mini/Code/python pyqt5/fullstack/assets/Defaults.xml"))
         custom_btn.clicked.connect(self.select_custom_xml)
 
         self.check_last_file()
@@ -36,12 +36,16 @@ class InitialWindow(QMainWindow):
     def select_custom_xml(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Open XML File", "", "XML Files (*.xml)")
         if file_path:
+            if not file_path.endswith(".xml"):
+                QMessageBox.critical(self, "Invalid File", "Only .xml files are supported.")
+                return
             self.launch_main_window(file_path)
+
     
     def check_last_file(self):
         # Load Defaults.xml using XMLManager
         self.settings = XMLManager()
-        self.settings.load_file("assets/Defaults.xml")
+        self.settings.load_file("/Users/angelramirez/Desktop/Desktop- Angel's Mac-Mini/Code/python pyqt5/fullstack/assets/Defaults.xml")
 
         node = self.settings.root.find(".//LastXMLFile")
         last_path = node.attrib.get("value", "") if node is not None else ""
@@ -58,6 +62,8 @@ class InitialWindow(QMainWindow):
                 self.launch_main_window(last_path)
 
     def launch_main_window(self, xml_path):
+        self.manager = XMLManager()
+        self.manager.load_file(xml_path)
         print(f"Launching with: {xml_path}")
         self.main_window = MainWindow(xml_path)
         self.main_window.show()
@@ -73,8 +79,13 @@ class InitialWindow(QMainWindow):
         urls = event.mimeData().urls()
         if urls:
             path = urls[0].toLocalFile()
-            if path.endswith(".xml"):
+            if not path.endswith(".xml"):
+                QMessageBox.critical(self, "Invalid File", "Only .xml files are supported.")
+                return
+            try:
                 self.launch_main_window(path)
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Failed to open XML:\n{e}")
 
 
 #from running main application, we get into initial window, which allows us to select a file to edit or just look at.

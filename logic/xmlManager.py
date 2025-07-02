@@ -18,14 +18,30 @@ class XMLManager:
         return ET.tostring(self.root, pretty_print=True, encoding='unicode')
 
     def get_layers(self):
-        return self.root.find("./LayeredStructure").findall("Layer")
+        ls = self.root.find("./LayeredStructure")
+        if ls is None:
+            print("Warning: No <LayeredStructure> found in XML.")
+            return []
+        return ls.findall("Layer")
 
     def get_materials(self):
-        return self.root.find("./MaterialList").findall("Material")
+        ml = self.root.find("./MaterialList")
+        if ml is None:
+            print(" Warning: No <MaterialList> found in XML.")
+            return []
+        return ml.findall("Material")
 
     def update_layer(self, index, key, value):
         layers = self.get_layers()
-        if index < len(layers):
-            element = layers[index].find(key)
-            if element is not None:
-                element.set("value", value)
+        if not (0 <= index < len(layers)):
+            print(f"[x] Layer index {index} out of range.")
+            return
+
+        element = layers[index].find(key)
+        if element is None:
+            print(f"[x] Layer {index} missing tag <{key}>.")
+            return
+
+        old_value = element.attrib.get("value", "<none>")
+        element.set("value", value)
+        print(f"[ok] Updated Layer {index} <{key}>: {old_value} → {value}")

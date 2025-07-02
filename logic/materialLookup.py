@@ -9,22 +9,36 @@ class MaterialLookupWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.manager = None
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
+
+        self._layout = QVBoxLayout()
+        self.setLayout(self._layout)
 
     def load_data(self, manager):
         self.manager = manager
-        while self.layout.count():
-            child = self.layout.takeAt(0)
+
+        # Clear previous view
+        while self._layout.count():
+            child = self._layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
 
         materials = self.manager.get_materials()
-        for i, mat in enumerate(materials):
+
+        for mat in materials:
             name = mat.find("name").attrib.get("value", "Unnamed")
-            btn = QPushButton(name)
-            btn.clicked.connect(lambda _, m=mat, idx=i: self.edit_material(m, idx))
-            self.layout.addWidget(btn)
+            box = QGroupBox(f"Material: {name}")
+            inner_layout = QVBoxLayout()
+
+            for elem in mat:
+                if elem.tag == "name":
+                    continue
+                tag = elem.tag
+                value = elem.attrib.get("value", "")
+                line = QLabel(f"{tag}: {value}")
+                inner_layout.addWidget(line)
+
+            box.setLayout(inner_layout)
+            self._layout.addWidget(box)
 
     def edit_material(self, mat, index):
         dialog = EditableMaterialDialog(mat, self.manager, index, on_update=self.refresh)
@@ -43,7 +57,17 @@ class EditableMaterialDialog(QDialog):
         self.index = index
         self.on_update = on_update
 
-        self.layout = QVBoxLayout()
+        if not self.layout():
+            self.setLayout(QVBoxLayout())
+        else:
+            self.clear_layout()
+
+        # add this helper:
+        def clear_layout(self):
+            while self.layout().count():
+                child = self.layout().takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
         self.form = QFormLayout()
         self.fields = {}
 
