@@ -1,0 +1,181 @@
+DotArray2 XML GUI Editor Documentation
+Project Summary:
+This PyQt5-based graphical interface allows users to load, edit, and save XML configuration files (DotArray2.xml) used by the MaSQE simulation engine. The application supports both default and custom XML inputs, layer/material parameter editing, and built-in validation.
+
+File Overview
+1. initialWindow.py
+Purpose: Landing window where users choose to open a default or custom XML file.
+
+Key Class:
+
+InitialWindow:
+
+Presents buttons for loading the default or browsing for a custom XML file.
+
+Supports drag-and-drop XML file loading.
+
+Launches the MainWindow for editing.
+
+2. mainW.py
+Purpose: Legacy or alternate XML editor window with tree-based view.
+
+Key Class:none
+
+MainWindow (in this file):
+
+Builds a basic QTreeWidget editor for XML tags, attributes, and text content.
+
+Supports manual element editing, addition, and deletion.
+
+💡 This class may be deprecated or transitioned to support advanced tree-based editing.
+
+3. XMLReader.py
+Purpose: Original single-file implementation bundling many GUI features.
+
+Key Classes:
+
+Layer, Material: Basic data structures.
+
+XMLReader: XML file import wrapper using lxml.etree.
+
+InitialWindow: GUI launcher (legacy version).
+
+LayerWindow: Popup editor for layer attributes.
+
+MainWindow:
+
+Full-featured parameter editor.
+
+Dynamic combo box loads different XML sections (e.g., GateBias, LayeredStructure).
+
+Supports adding/removing layers and materials, writing values, and validating types.
+
+Monolithic file — parts of this have been modularized in newer files like layerWindow.py, xmlManager.py.
+
+4. materialsWindow.py
+Purpose: Read-only pop-up dialog for inspecting material properties.
+
+Key Classes:
+
+MaterialDialog: QDialog that lists all fields for a material.
+
+MaterialLookupWidget:
+
+Lists materials as buttons.
+
+Loads material data via XMLManager.
+
+Launches MaterialDialog on button click.
+
+5. materialLookup.py
+Purpose: Alternative implementation of a Material Lookup interface.
+
+Key Class:
+
+MaterialLookupWidget:
+
+Similar to materialsWindow.py, includes QGroupBox with material info shown when a material is selected.
+
+6. layerWindow.py
+Purpose: Layer edit popup dialog.
+
+Key Class:
+
+LayerWindow:
+
+Allows users to edit name, materialType, height, panelDensity, and localWaveCalcType.
+
+Calls a callback with updated data for integration with MainWindow.
+
+7. layerEditor.py
+Purpose: Main widget to display/edit multiple layers inline.
+
+Key Class:
+
+LayerEditorWidget:
+
+Displays all layers with form fields.
+
+Updates layer attributes directly via XMLManager.update_layer.
+
+8. xmlManager.py
+Purpose: Backend handler for loading, saving, and updating XML content.
+
+Key Class:
+
+XMLManager:
+
+load_file(), save_file() to handle XML I/O.
+
+get_layers(), get_materials() for retrieving editable elements.
+
+update_layer() to change individual layer parameters.
+
+Key XML Files
+DotArray2.xml
+Main simulation input file. Contains:
+
+Physical parameters (e.g., gate bias, boundary conditions)
+
+Material definitions
+
+Layered structure
+
+Domain-specific subsettings
+
+Defaults.xml
+Used as a GUI configuration and template.
+
+Stores:
+
+Editor preferences (font, last file path)
+
+Default simulation parameters
+
+Locked materials
+
+List of "basic" sections for simple mode
+
+✅ Completed Features
+GUI for default/custom XML file selection
+
+Drag and drop support
+
+Tabbed section display (via combo box)
+
+Material and Layer editor windows
+
+Input validation (e.g., numerical types)
+
+Dynamic XML section updates
+
+File saving with validation
+
+Split between monolithic legacy (XMLReader.py) and modular modern architecture (xmlManager.py, initialWindow.py, etc.)
+
+🛠️ Next Steps
+🎨 UI/UX Improvements
+ Add scroll support to LayerWindow and MaterialDialog
+
+ Improve layout scalability for large XMLs
+
+ Create tabbed or collapsible UI for better navigation
+
+🔧 Features
+ Add global undo/redo for XML changes
+
+ Allow search/filter for parameters
+
+ Preview plots or layer geometry (via .cif)
+
+🔍 Backend
+ Modularize XMLReader.py completely
+
+ Add unit tests for xmlManager.py
+
+ Add support for "less-used" or advanced parameters toggle
+
+
+
+
+

@@ -28,7 +28,7 @@ class InitialWindow(QMainWindow):
         layout.addWidget(custom_btn)
         layout.addWidget(self.label)
 
-        default_btn.clicked.connect(partial(self.launch_main_window, "/Users/angelramirez/Desktop/Desktop- Angel's Mac-Mini/Code/python pyqt5/fullstack/assets/Defaults.xml"))
+        default_btn.clicked.connect(partial(self.launch_main_window, "assets/Defaults.xml"))
         custom_btn.clicked.connect(self.select_custom_xml)
 
         self.check_last_file()
@@ -45,7 +45,7 @@ class InitialWindow(QMainWindow):
     def check_last_file(self):
         # Load Defaults.xml using XMLManager
         self.settings = XMLManager()
-        self.settings.load_file("/Users/angelramirez/Desktop/Desktop- Angel's Mac-Mini/Code/python pyqt5/fullstack/assets/Defaults.xml")
+        self.settings.load_file("/Users/angelramirez/Desktop/coding/Current/Uclatlan/pythonpyqt5/assets/Defaults.xml")
 
         node = self.settings.root.find(".//LastXMLFile")
         last_path = node.attrib.get("value", "") if node is not None else ""
