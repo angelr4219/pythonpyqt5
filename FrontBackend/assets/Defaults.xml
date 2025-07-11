@@ -1,0 +1,461 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Root>
+
+	<XmlEditorSettings>
+		<LastCifFile value="/Users/angelramirez/Downloads/PythonInterface/testing.xml" type="string"/>
+		<LastSaveFile value="/Users/angelramirez/Downloads/PythonInterface/testing.xml" type="string"/>
+		<LastXMLFile value="/Users/angelramirez/Downloads/PythonInterface/testing.xml" type="string"/>
+		<Font value="Ubuntu" type="string"/>
+		<FontSize value="8" type="int"/>
+		<GateBias>
+			<topBias1d value="0.000e+00" type="double"/>
+			<biasOffset value="0.000e+00" type="double"/>
+		</GateBias>
+		<BasicParameterList>
+			<BasicParameter value="RunParameters" type="string"/>
+			<BasicParameter value="GateBias" type="string"/>
+			<BasicParameter value="TransverseParameters" type="string"/>
+			<BasicParameter value="LayeredStructure" type="string"/>
+			<BasicParameter value="MultiDomainParameters" type="string"/>
+			<BasicParameter value="MaterialList" type="string"/>
+		</BasicParameterList>
+		<LockedMaterialList>
+			<LockedMaterial value="InP" type="string"/>
+			<LockedMaterial value="Vacuum" type="string"/>
+		</LockedMaterialList>
+	</XmlEditorSettings>
+
+
+
+	<Parameters>
+	   
+		<RunParameters>
+			<OutputParameters>
+				<stateOutputCountMax value="5" type="long"/>
+				<testSection value="false" type="bool"/>
+				<waveFunSquaredPlotFlag value="true" type="bool"/>
+			</OutputParameters>
+			<SelfConsistentIteration>
+				<SCstopTolerance value="1.000e-09" type="double"/>
+			</SelfConsistentIteration>
+			<StabilizedRK>
+				<RKinitTimestep value="5.000e-01" type="double"/>
+				<RKmaxSteps value="50" type="long"/>
+				<RKdegree value="4" type="long"/>
+				<verboseOutputFlag value="true" type="bool"/>
+			</StabilizedRK>
+			<gridFlag value="false" type="bool"/>
+			<plotFlag value="true" type="bool"/>
+			<threadCount value="4" type="long"/>
+			<selfConsistencyFlag value="true" type="bool"/>
+		</RunParameters>
+		
+	   
+	<AutoTuningData>
+		<tuningInputFileName value="this" type="string"/>
+		<outputFileName value="autoTuningData.xml" type="string"/>
+		<ExePath value="/home/anderson/SCC_Q_Projects/MaSQE_MDMM_Dev/Release/RunMDMM" type="string"/>
+		<DerivativePertubationSize value=".01" type="double"/>
+		<TuningTolerance value="1.0e-11" type="double"/>
+		<OutputAlphaMatrix value="true" type="bool"/>
+	</AutoTuningData> 
+
+	<ImportExportAutoTuningState>
+		<exportAutoTuneFlag value="true" type="bool"/>
+		<importAutoTuneFlag value="false" type="bool"/>
+		<autoTuneFileName value="autoTune_binary.pkl" type="string"/>
+		<recreateInitialState value="true" type="bool"/>
+	</ImportExportAutoTuningState>   
+
+	<AutoTuningInput>
+		<P1>  <inputType value="plungerGate" type="string"/> </P1>
+		<P2>  <inputType value="plungerGate" type="string"/> </P2>
+	</AutoTuningInput>
+		
+	<AutoTuningOutput>
+	<P1domain>
+		<targetValue value="0.0" type="double"/>
+		<outputType value="localEnergy" type="string"/>
+		<relatedPlungerGate value="P1" type="string"/>
+	</P1domain>
+		
+	<P2domain>
+		<targetValue value="0.0" type="double"/>
+		<outputType value="localEnergy"/>
+		<relatedPlungerGate value="P2" type="string"/>
+	</P2domain>
+	</AutoTuningOutput>
+
+
+	<EffectiveBC>
+	<effectiveBCflag value="false" type="bool"/>
+	<effectiveBCinterfaceIndex value="1" type="long"/>
+	<effectiveBCdataFile value="../../PlanarGateBlock/DotArray2.dnd" type="string"/>
+	<EBCmodesX value="-1" type="long"/>
+	<EBCmodesY value="-1" type="long"/>
+	</EffectiveBC>
+
+	<EffectiveBC_Parameters>
+	<gatedInterfaceSrc>
+	<parameterValue value="-5.0e+11" type="double"/>
+	<parameterUnits value="ChargePerCM^2"/>
+	</gatedInterfaceSrc>
+	</EffectiveBC_Parameters>
+
+
+
+		<GateBias>
+			<topBias1d value="0.000e+00" type="double"/>
+			<biasOffset value="0.000e+00" type="double"/>
+		</GateBias>
+		
+		
+		
+		<TransverseParameters>
+			<gateGeo2dFileName value="DotArray2.cif" type="string"/>
+			<xPanelDensity value="0.05" type="double"/>
+			<yPanelDensity value="0.05" type="double"/>
+			<FFTquantizationFlag value="true" type="bool"/>
+			<gateSmoothingFlag value="true" type="bool"/>
+		</TransverseParameters>
+		
+		
+		
+		<GateSmoothingParameters>
+			<deltaFactor value="3" type="long"/>
+			<minimalDelta value="1.500e+01" type="double"/>
+			<minimalDeltaFlag value="false" type="bool"/>
+			<mollifierDiff value="6" type="long"/>
+			<mollifierOrder value="4" type="long"/>
+			<refineDegree value="3" type="long"/>
+			<refineFactor value="3" type="long"/>
+			<richardsonType value="24" type="long"/>
+		</GateSmoothingParameters>
+		
+		
+		
+		<InterfaceBCparameters>
+			<capGateDist value="5.000e+01" type="double"/>
+			<capMaterialName value="Vacuum" type="string"/>
+			<capZpanelDensity value="2.000e-01" type="double"/>
+			<interfaceBCflag value="false" type="bool"/>
+			<surfaceSrcDensity value="-5.200e+11" type="double"/>
+			<upperCapType value="INFINITE" type="string"/>
+		</InterfaceBCparameters>
+		
+		
+		
+		<LowerSurfaceBoundaryConditions>
+			<bias value="0.000e+00" type="double"/>
+			<botBiasType value="CLASSICAL" type="string"/>
+		</LowerSurfaceBoundaryConditions>
+		
+		<NoiseSources>
+		<dipole>
+		<dirX value="1.0" type="double"/>
+		<dirY value="0.0" type="double"/>
+		<dirZ value="0.0" type="double"/>
+		<strength value="0.0" type="double"/>
+		<xPos value="0.0" type="double"/>
+		<yPos value="0.0" type="double"/>
+		<zPos value="20.0" type="double"/>
+		<dipolePanelFactor value="6" type="long"/>
+		</dipole>
+		</NoiseSources>
+		
+		
+		<ImportExportSPiterate>
+			<exportPhiStarFlag value="true" type="bool"/>
+			<importPhiStarFlag value="true" type="bool"/>
+			<phiStarFileName value="phiStar_binary.dat" type="string"/>
+		</ImportExportSPiterate>
+		
+		
+		
+		<CreateInitialSPiterate>
+			<calculationType value="Q1D_X_CLASSICAL2D" type="string"/>
+			<createInitialIterateFlag value="false" type="bool"/>
+			<refinementFactor value="4" type="long"/>
+			<xPanelDensity value=".05" type="double"/>
+			<yPanelDensity value=".05" type="double"/>
+		</CreateInitialSPiterate>
+		
+		
+		
+		<SP_Parameters>
+			<energyTransitionDelta value="1.000e-03" type="double"/>
+			<fermiLevel value="0.000e+00" type="double"/>
+		</SP_Parameters>
+		
+		
+		
+		<PoissonSolver_NumericalParameters>
+			<ZapproxOrder value="4" type="long"/>
+			<iterativeInterfaceBC value="false" type="bool"/>
+			<verboseInterfaceBC value="false" type="bool"/>
+		</PoissonSolver_NumericalParameters>
+		
+		
+		
+		<SingleParticleEigensystemParameters>
+			<maxDegeneracy value="4" type="long"/>
+			<subspaceTol value="1.000e-12" type="double"/>
+			<xyOpOrder value="4" type="long"/>
+			<zBasisSize value="10" type="long"/>
+			<zSplineDegree value="7" type="long"/>
+			<zSplinePanelDensity value="2.000e-01" type="double"/>
+			<verboseEigFlag value="false"/>
+			<stopCondition value="RESIDUAL_ONLY" type="string"/> 
+		</SingleParticleEigensystemParameters> <!-- one of DEFAULT,COMBINATION,RESIDUAL_ONLY,EIGENVALUE_ONLY -->
+		
+		
+		
+	<MultiDomainParameters>
+		<Masking_Parameters>
+		<relativeTransitionWidth value="2.000e-01" type="double"/>
+		</Masking_Parameters>
+		
+		<SubdomainFlags>
+		<excludedPotentialType value="SUBDOMAIN_INF" type="string"/>
+		<snapBoundariesToGridFlag value="false" type="bool"/>
+		</SubdomainFlags>
+	   
+		<SubdomainInterpolation>
+		<degreeX value="4" type="long"/>
+		<degreeY value="4" type="long"/>
+		<degreeZ value="4" type="long"/>
+		</SubdomainInterpolation>
+		
+		<SubdomainSmoothing>
+		<densitySmoothing value="true" type="bool"/>
+		<deltaXmeshFactor value="4" type="long"/>
+		<deltaYmeshFactor value="4" type="long"/>
+		<mollifierOrder value="4" type="long"/>
+		<mollifierDiff value="6" type="long"/>
+		</SubdomainSmoothing>
+	</MultiDomainParameters>
+		
+		
+	<ComputationalSubdomains>
+	<GlobalSubdomain>
+		<fixedChargeFlag value="false" type="bool"/>
+		<fixedChargeValue value="1.000e-03" type="double"/>
+		<occupancy value="2" type="long"/>
+		<calculationType value="Q1D_X_CLASSICAL2D" type="string"/>
+		<maskSubdomainsFlag value="true" type="bool"/>
+		<additionalMaskCharge value="3.000e+00" type="double"/>
+		<maskedDensityFraction value="9.000e-01" type="double"/>
+	</GlobalSubdomain>
+			<P1domain>
+				<domainXmin value="-1.000e+02" type="double"/>
+				<domainXmax value="0.000e+00" type="double"/>
+				<domainYmin value="-6.500e+01" type="double"/>
+				<domainYmax value="6.500e+01" type="double"/>
+				<refinementFactor value="2" type="long"/>
+				<fixedChargeValue value="1.0" type="double"/>
+				<fixedChargeFlag value="true" type="bool"/>
+				<occupancy value="1" type="long"/>
+				<calculationType value="Q3D_PRODUCT_BASIS" type="string"/>
+				<!-- BULK_CLASSICAL,Q1D_X_CLASSICAL2D,Q3D_PRODUCT_BASIS,Q3D_GRID3D_BASIS --> 
+				<domainBarrierFlag value="false" type="bool"/>
+				<globalSubdomainMaskType value="DENSITY" type="string"/>
+				<subdomainLinkedFlag value="false"/>
+			</P1domain>
+			<P2domain>
+				<domainXmin value="0.000e+00" type="double"/>
+				<domainXmax value="1.000e+02" type="double"/>
+				<domainYmin value="-6.500e+01" type="double"/>
+				<domainYmax value="6.500e+01" type="double"/>
+				<refinementFactor value="2" type="long"/>
+				<fixedChargeValue value="1.0" type="double"/>
+				<fixedChargeFlag value="true" type="bool"/>
+				<occupancy value="1" type="long"/>
+				<calculationType value="Q3D_PRODUCT_BASIS" type="string"/>
+				<domainBarrierFlag value="false" type="bool"/>
+				<globalSubdomainMaskType value="DENSITY" type="string"/>
+				<subdomainLinkedFlag value="false"/>
+			</P2domain>
+		</ComputationalSubdomains>
+		
+		
+	<TunnelingRateCalculation>
+	<excludedPotentialType value="SUBDOMAIN_INF" type="string"/> 
+	<tunnelCalcPlotFlag value="true" type="bool"/>
+	 
+	<P1P2dot>
+		<computeRateFlag value="true" type="bool"/>
+		<subdomainA value="P1domain" type="string"/>
+		<subdomainB value="P2domain" type="string"/>
+		<barrierGate value="B12" type="string"/>
+	</P1P2dot>
+	</TunnelingRateCalculation>
+		
+
+	<ExcludedPotentialCalculation>
+	<PIP2_FCI>
+		<createPotentialFlag value="true"/>
+		<excludedPotentialType value="SUBDOMAIN_INF" type="string"/> 
+		<subdomain_1 value="P1domain" type="string"/>
+		<subdomain_2 value="P2domain" type="string"/>
+	</PIP2_FCI>
+
+	<PI_FCI>
+		<createPotentialFlag value="false"/>
+		<excludedPotentialType value="SUBDOMAIN_INF" type="string"/> 
+		<subdomain_1 value="P1domain" type="string"/>
+	</PI_FCI>
+
+	<P2_FCI>
+		<createPotentialFlag value="false"/>
+		<excludedPotentialType value="SUBDOMAIN_INF" type="string"/> 
+		<subdomain_1 value="P2domain" type="string"/>
+	</P2_FCI>
+	</ExcludedPotentialCalculation>
+
+		
+		<MaterialDataSource>
+			<materialSource value="MaterialList" type="string"/>
+		</MaterialDataSource>
+		
+		
+		
+		<LayeredStructure>
+			<Layer>
+				<name value="Layer" type="string"/>
+				<materialType value="Si70Ge30" type="string"/>
+				<height value="4.500e+01" type="double"/>
+				<panelDensity value="3.000e-01" type="double"/>
+				<localWaveCalcType value="none" type="string"/>
+			</Layer>
+			<Layer>
+				<name value="Layer" type="string"/>
+				<materialType value="sSibuffer" type="string"/>
+				<height value="5.000e+00" type="double"/>
+				<panelDensity value="3.000e+00" type="double"/>
+				<localWaveCalcType value="classical" type="string"/>
+			</Layer>
+			<Layer>
+				<name value="q_layer_1" type="string"/>
+				<materialType value="sSi" type="string"/>
+				<height value="5.000e+00" type="double"/>
+				<panelDensity value="3.000e+00" type="double"/>
+				<localWaveCalcType value="quantum" type="string"/>
+			</Layer>
+			<Layer>
+				<name value="Layer" type="string"/>
+				<materialType value="sSibuffer" type="string"/>
+				<height value="5.000e+00" type="double"/>
+				<panelDensity value="3.000e+00" type="double"/>
+				<localWaveCalcType value="classical" type="string"/>
+			</Layer>
+			<Layer>
+				<name value="Layer" type="string"/>
+				<materialType value="Si70Ge30dSubstrate" type="string"/>
+				<height value="250" type="long"/>
+				<panelDensity value="1.000e-01" type="double"/>
+				<localWaveCalcType value="classicalBC" type="string"/>
+			</Layer>
+			<baseLocation value="0.000e+00" type="double"/>
+			<uniformQwellGridFlag value="true" type="bool"/>
+		</LayeredStructure>
+		
+		
+		
+		<MaterialList>
+			<Material>
+				<name value="InP" type="string"/>
+				<dielectricConstant value="1.261e+01" type="double"/>
+				<effectiveMass_x value="7.950e-02" type="double"/>
+				<effectiveMass_y value="7.950e-02" type="double"/>
+				<effectiveMass_z value="7.950e-02" type="double"/>
+				<bandShift value="0.000e+00" type="double"/>
+				<backgroundDopingDensity value="3.000e+15" type="double"/>
+			</Material>
+			<Material>
+				<name value="InGaAs" type="string"/>
+				<dielectricConstant value="1.411e+01" type="double"/>
+				<effectiveMass_x value="4.300e-02" type="double"/>
+				<effectiveMass_y value="4.300e-02" type="double"/>
+				<effectiveMass_z value="4.300e-02" type="double"/>
+				<bandShift value="-2.160e-01" type="double"/>
+				<backgroundDopingDensity value="0.000e+00" type="double"/>
+			</Material>
+			<Material>
+				<name value="ALD" type="string"/>
+				<dielectricConstant value="2.900e+00" type="double"/>
+				<effectiveMass_x value="1.000e+00" type="double"/>
+				<effectiveMass_y value="1.000e+00" type="double"/>
+				<effectiveMass_z value="1.000e+00" type="double"/>
+				<bandShift value="1.000e+00" type="double"/>
+				<backgroundDopingDensity value="0.000e+00" type="double"/>
+			</Material>
+			<Material>
+				<name value="sSi" type="string"/>
+				<dielectricConstant value="1.170e+01" type="double"/>
+				<effectiveMass_x value="1.990e-01" type="double"/>
+				<effectiveMass_y value="1.990e-01" type="double"/>
+				<effectiveMass_z value="8.950e-01" type="double"/>
+				<bandShift value="-2.350e-01" type="double"/>
+				<backgroundDopingDensity value="0.000e+00" type="double"/>
+			</Material>
+			<Material>
+				<name value="Si70Ge30bulkd" type="string"/>
+				<dielectricConstant value="1.305e+01" type="double"/>
+				<effectiveMass_x value="1.975e-01" type="double"/>
+				<effectiveMass_y value="1.975e-01" type="double"/>
+				<effectiveMass_z value="9.160e-01" type="double"/>
+				<bandShift value="0.000e+00" type="double"/>
+				<backgroundDopingDensity value="3.000e+17" type="double"/>
+			</Material>
+			<Material>
+				<name value="Si70Ge30" type="string"/>
+				<dielectricConstant value="1.305e+01" type="double"/>
+				<effectiveMass_x value="1.975e-01" type="double"/>
+				<effectiveMass_y value="1.975e-01" type="double"/>
+				<effectiveMass_z value="9.160e-01" type="double"/>
+				<bandShift value="0.000e+00" type="double"/>
+				<backgroundDopingDensity value="0.000e+00" type="double"/>
+			</Material>
+			<Material>
+				<name value="Si70Ge30d" type="string"/>
+				<dielectricConstant value="1.305e+01" type="double"/>
+				<effectiveMass_x value="1.975e-01" type="double"/>
+				<effectiveMass_y value="1.975e-01" type="double"/>
+				<effectiveMass_z value="9.160e-01" type="double"/>
+				<bandShift value="0.000e+00" type="double"/>
+				<backgroundDopingDensityOrig value="1.000e+15" type="double"/>
+				<backgroundDopingDensity value="1.000e+17" type="double"/>
+			</Material>
+			<Material>
+				<name value="sSibuffer" type="string"/>
+				<dielectricConstant value="1.170e+01" type="double"/>
+				<effectiveMass_x value="1.990e-01" type="double"/>
+				<effectiveMass_y value="1.990e-01" type="double"/>
+				<effectiveMass_z value="8.950e-01" type="double"/>
+				<bandShift value="0.000e+00" type="double"/>
+				<backgroundDopingDensity value="0.000e+00" type="double"/>
+			</Material>
+			<Material>
+				<name value="Si70Ge30dSubstrate" type="string"/>
+				<dielectricConstant value="1.305e+01" type="double"/>
+				<effectiveMass_x value="1.975e-01" type="double"/>
+				<effectiveMass_y value="1.975e-01" type="double"/>
+				<effectiveMass_z value="9.160e-01" type="double"/>
+				<bandShift value="0.000e+00" type="double"/>
+				<backgroundDopingDensity value="1.000e+16" type="double"/>
+			</Material>
+			<Material>
+				<name value="Vacuum" type="string"/>
+				<dielectricConstant value="1.000e+00" type="double"/>
+				<effectiveMass_x value="0.000e+00" type="double"/>
+				<effectiveMass_y value="0.000e+00" type="double"/>
+				<effectiveMass_z value="0.000e+00" type="double"/>
+				<bandShift value="0.000e+00" type="double"/>
+				<backgroundDopingDensity value="0.000e+00" type="double"/>
+			</Material>
+		</MaterialList>
+		
+		
+		
+	</Parameters>
+</Root>
