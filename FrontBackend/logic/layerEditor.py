@@ -1,5 +1,8 @@
 # logic/layer_editor.py
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QGroupBox, QFormLayout, QLabel, QLineEdit, QCheckBox
+from PyQt5.QtWidgets import (
+    QWidget, QVBoxLayout, QLabel, QPushButton,
+    QGroupBox, QDialog, QLineEdit, QFormLayout, QMessageBox, QScrollArea, QCheckBox
+)
 from logic.ParameterDocs import parameter_docs
 
 from logic.tooltipManager import show_parameter_tooltip_persistent
@@ -15,14 +18,26 @@ class LayerEditorWidget(QWidget):
         self.tooltip_checkbox.setChecked(True)
         self._layout.addWidget(self.tooltip_checkbox)
 
+        self.add_button = QPushButton("Add Layer")
+        self.add_button.clicked.connect(self.add_layer)
+        self._layout.addWidget(self.add_button)
+
+        self.scroll_area = QScrollArea()
+        self.scroll_widget = QWidget()
+        self.scroll_layout = QVBoxLayout()
+        self.scroll_widget.setLayout(self.scroll_layout)
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setWidget(self.scroll_widget)
+
+        self._layout.addWidget(self.scroll_area)
+
     def load_data(self, manager):
         self.manager = manager
-        while self._layout.count() > 1:
-            child = self._layout.takeAt(1)
+        while self.scroll_layout.count():
+            child = self.scroll_layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
 
-        materials = manager.get_materials()
         for idx, layer in enumerate(manager.get_layers()):
             box = QGroupBox(f"Layer {idx + 1}")
             form = QFormLayout()
@@ -37,7 +52,7 @@ class LayerEditorWidget(QWidget):
                 )
                 form.addRow(QLabel(label), input_field)
             box.setLayout(form)
-            self._layout.addWidget(box)
+            self.scroll_layout.addWidget(box)
 
     def make_focus_event(self, widget, label):
         def event(event):
@@ -49,5 +64,9 @@ class LayerEditorWidget(QWidget):
         return lambda: (self.manager.delete_layer(index), self.load_data(self.manager))
 
     def add_layer(self):
-        self.manager.add_layer()
+        if self.manager:
+            self.manager.add_layer()
+            self.load_data(self.manager)
+
+    def refresh(self):
         self.load_data(self.manager)

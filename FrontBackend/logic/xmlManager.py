@@ -30,6 +30,20 @@ class XMLManager:
             print(" Warning: No <MaterialList> found in XML.")
             return []
         return ml.findall("Material")
+    def add_material(self, material_dict):
+        ml = self.root.find("./MaterialList")
+        if ml is None:
+            print("[x] No <MaterialList> found in XML.")
+            return
+        new_elem = ET.Element("Material")
+        for key, value in material_dict.items():
+            sub_elem = ET.Element(key)
+            sub_elem.set("value", value)
+            new_elem.append(sub_elem)
+        ml.append(new_elem)
+        print("[ok] Added new material.")
+
+    
 
     def update_layer(self, index, key, value):
         layers = self.get_layers()
