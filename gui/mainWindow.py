@@ -10,8 +10,14 @@ from gui.layerWindow import LayerWindow
 
 from logic.materialLookup import MaterialLookupWidget
 from gui.materialsWindow import MaterialDialog
+from GateBiasInterfaceEditor import GateBiasEditor  
 
 from functools import partial
+
+
+
+
+
 
 class MainWindow(QMainWindow):
     def __init__(self, xml_path):
@@ -24,6 +30,7 @@ class MainWindow(QMainWindow):
 
         self.initUI()
         self.load_views()
+        
 
     def initUI(self):
         layout = QVBoxLayout()
@@ -37,6 +44,10 @@ class MainWindow(QMainWindow):
         self.main_view = QTextEdit()
         self.layer_view = LayerEditorWidget()
         self.material_view = MaterialLookupWidget()
+        
+        self.edit_gate_bias_btn = QPushButton("Edit Gate Bias Parameters")
+        self.edit_gate_bias_btn.clicked.connect(self.open_gate_bias_editor)
+        layout.addWidget(self.edit_gate_bias_btn)
 
         self.view_stack = QStackedLayout()
         self.view_stack.addWidget(self.main_view)
@@ -87,3 +98,7 @@ class MainWindow(QMainWindow):
         if path:
             self.manager.save_file(path)
             QMessageBox.information(self, "Saved", f"File saved to {path}")
+            
+    def open_gate_bias_editor(self):
+        editor = GateBiasEditor(self.manager)
+        editor.show()
