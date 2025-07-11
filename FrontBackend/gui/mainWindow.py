@@ -24,6 +24,18 @@ class MainWindow(QMainWindow):
         self.file_name = xml_path.replace(".xml", "_edited.xml")
         self.manager.load_file(xml_path)
 
+        self.views = []
+        self.buttons = []
+
+        self.parameter_sections = [
+            "RunParameters",
+            "GateBias",
+            "TransverseParameters",
+            "LayeredStructure",
+            "MultiDomainParameters",
+            "MaterialList",
+        ]
+
         self.initUI()
         self.load_views()
 
@@ -56,6 +68,16 @@ class MainWindow(QMainWindow):
         self.gatebias_btn = QPushButton("Gate Bias")
         self.test_btn = QPushButton("test")
 
+         # Add dynamic Parameter Editors
+        for idx, section in enumerate(self.parameter_sections, start=1):
+            editor = ParameterEditor(self.manager, section, section)
+            self.views.append(editor)
+            self.view_stack.addWidget(editor)
+
+            btn = QPushButton(section)
+            btn.clicked.connect(lambda checked, i=idx: self.view_stack.setCurrentIndex(i))
+            self.button_bar.addWidget(btn)
+        
         views = {
             self.main_btn: 0,
             self.layer_btn: 1,
@@ -67,6 +89,10 @@ class MainWindow(QMainWindow):
             btn.clicked.connect(partial(self.view_stack.setCurrentIndex, idx))
             self.button_bar.addWidget(btn)
         self.button_bar.addWidget(self.download_button)
+
+       
+
+        
 
         layout.addWidget(self.file_button)
         layout.addLayout(self.button_bar)

@@ -12,7 +12,7 @@ if __name__ == "__main__":
     
 
     window = InitialWindow()
- #  window = MainWindow("/Users/angelramirez/Desktop/Desktop- Angel's Mac-Mini/Code/python pyqt5/fullstack/assets/something.xml")
+   # window = MainWindow("FrontBackend/assets/DotArray2 2.xml")
     window.show()
     
     sys.exit(app.exec_())
