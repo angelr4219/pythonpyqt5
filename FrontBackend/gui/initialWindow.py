@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QPushButton, QWidget, QFil
 from functools import partial
 from gui.mainWindow import MainWindow
 from PyQt5.QtCore import Qt
-from logic.xmlManager import XMLManager  # if not already imported
+from logic.xmlManager import XMLManager 
 
 
 class InitialWindow(QMainWindow):

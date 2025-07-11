@@ -31,6 +31,7 @@ class XMLManager:
             return []
         return ml.findall("Material")
     def add_material(self, material_dict):
+        
         ml = self.root.find("./MaterialList")
         if ml is None:
             print("[x] No <MaterialList> found in XML.")

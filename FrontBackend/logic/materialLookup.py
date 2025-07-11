@@ -5,8 +5,10 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 from logic.ParameterDocs import parameter_docs
+from logic.xmlManager import XMLManager  # if not already imported
 
 from logic.tooltipManager import show_parameter_tooltip
+
 class MaterialLookupWidget(QWidget):
     def __init__(self):
         super().__init__()
@@ -50,19 +52,11 @@ class MaterialLookupWidget(QWidget):
 
             box.setLayout(inner_layout)
             self.scroll_layout.addWidget(box)
+    def add_material(self ):
+        dialog = EditableMaterialDialog(None, self.manager, None, on_update=self.refresh)
+        dialog.exec_()
 
-    def add_material(self):
-        ml = self.root.find("./MaterialList")
-        if ml is None:
-            print("[x] No <MaterialList> found in XML.")
-            return
-        new_elem = ET.Element("Material")
-        for key, value in material_dict.items():
-            sub_elem = ET.Element(key)
-            sub_elem.set("value", value)
-            new_elem.append(sub_elem)
-        ml.append(new_elem)
-        print("[ok] Added new material.")
+   
 
     def refresh(self):
         self.load_data(self.manager)
@@ -98,7 +92,7 @@ class EditableMaterialDialog(QDialog):
     def save_material(self):
         new_material = {tag: field.text() for tag, field in self.fields.items()}
         if self.material is None:
-            self.add_material(new_material)
+            self.manager.add_material(new_material)
         else:
             for tag, value in new_material.items():
                 self.material.find(tag).set("value", value)
