@@ -14,11 +14,6 @@ if __name__ == "__main__":
     window = InitialWindow()
  #  window = MainWindow("/Users/angelramirez/Desktop/Desktop- Angel's Mac-Mini/Code/python pyqt5/fullstack/assets/something.xml")
     window.show()
-    # For testing purposes, you can directly create a MainWindow instance
-    #test again
-    #sdfsazdfa 
-    boolean = False
-    if False == boolean:
-        print("this works")
+    
     sys.exit(app.exec_())
 
