@@ -1,0 +1,35 @@
+Definitions:
+funct tools - creates partial functions
+qfront- allows customization of fonts in GUI
+pyqt5.qtcore - Imports core Qt functionality, including enums like Qt.AlignCenter, Qt.Checked, etc.
+ PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QPushButton, QLabel, QComboBox, QListWidget,
+    QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QScrollArea, QFrame,
+    QCheckBox, QFileDialog, QMessageBox
+)
+
+Imports all the widgets and layout tools used to build the UI, such as buttons, text fields, layout managers, and dialogs.
+
+Imports the lxml version of the XML parser and aliases it as ET. Used for reading and writing XML files.
+
+
+<BasicParameter value="RunParameters" type="string"/>
+			<BasicParameter value="GateBias" type="string"/>
+			<BasicParameter value="TransverseParameters" type="string"/>
+			<BasicParameter value="LayeredStructure" type="string"/>
+			<BasicParameter value="MultiDomainParameters" type="string"/>
+			<BasicParameter value="MaterialList" type="string"/>
+
+
+ gui/
+│   └── initial_window.py        ← Initial screen: Load defaults or file
+│   └── main_window.py           ← Main parameter editing interface
+│   └── layer_window.py          ← Layer editor (popup)
+├── logic/
+│   └── xml_manager.py           ← Handles loading, parsing, updating XML
+│   └── layer.py                 ← Layer data model
+│   └── material.py              ← Material data model
+├── assets/
+│   └── Defaults.xml             ← Default config (can be moved here)
+│   └── DotArray2.xml            ← Sample input
+└── requirements.txt

@@ -1,0 +1,21 @@
+# DotArray XML Editor
+
+A PyQt5 GUI for editing XML simulation input files (`DotArray2.xml`) used in quantum device simulations.
+
+## Features
+- View, edit, add, and delete layers and materials.
+- Auto-load default XML structure.
+- Drag and drop `.xml` file support.
+- One-click GUI executable packaging.
+
+---
+
+### Requirements
+- Python 3.8+
+- PyQt5
+- lxml
+
+###  Setup
+Clone this repo and install dependencies:
+```bash
+pip install -r requirements.txt

@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<GeneratedParameters>
+  <Parameter value="SDasd" type="string"/>
+  <FeatureEnabled value="False" type="bool"/>
+  <SelectedOption value="Option 1" type="string"/>
+</GeneratedParameters>
