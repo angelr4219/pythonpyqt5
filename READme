@@ -4,7 +4,7 @@ A modular Python GUI for editing DotArray2 simulation input files (`DotArray2.xm
 
 ---
 
-## ✅ Features (As of July 2025)
+## Features (As of July 2025)
 
 - Load default/custom DotArray2 XML input files.
 - Drag and drop `.xml` file support.
@@ -43,7 +43,4 @@ A modular Python GUI for editing DotArray2 simulation input files (`DotArray2.xm
 - PyQt5
 - lxml
 
-### Install Dependencies:
 
-```bash
-pip install -r requirements.txt
