@@ -2,180 +2,105 @@ DotArray2 XML GUI Editor Documentation
 Project Summary:
 This PyQt5-based graphical interface allows users to load, edit, and save XML configuration files (DotArray2.xml) used by the MaSQE simulation engine. The application supports both default and custom XML inputs, layer/material parameter editing, and built-in validation.
 
-File Overview
-1. initialWindow.py
-Purpose: Landing window where users choose to open a default or custom XML file.
+initialWindow.pyPurpose: Landing window for default or custom XML selection.
+Key Class: InitialWindow
+__init__(): Sets up the window layout with two buttons (Load Defaults, Load Custom XML), a drag-and-drop label, and calls check_last_file(). Enables drag-and-drop event handling.
+select_custom_xml(): Opens a file dialog allowing the user to select an XML file. Validates that the file ends with .xml before loading it. Shows a message box if an invalid file is selected.
+check_last_file(): Checks the Defaults.xml file for the last opened XML file path. If found, prompts the user to reopen it using a Yes/No message box.
+launch_main_window(xml_path): Loads the given XML file using XMLManager. Opens MainWindow initialized with that file and closes InitialWindow.
+dragEnterEvent(event): Accepts drag events if they contain URLs, allowing file drag-and-drop.
+dropEvent(event): Processes the dropped file, checks that it's an XML, and calls launch_main_window().
+Purpose: Landing window for default or custom XML selection.
+Key Class: InitialWindow
+Methods: launch_main_window(), check_last_file(), drag and drop event handlers.
 
-Key Class:
-
-InitialWindow:
-
-Presents buttons for loading the default or browsing for a custom XML file.
-
-Supports drag-and-drop XML file loading.
-
-Launches the MainWindow for editing.
-
-2. mainW.py
-Purpose: Legacy or alternate XML editor window with tree-based view.
-
-Key Class:none
-
-MainWindow (in this file):
-
-Builds a basic QTreeWidget editor for XML tags, attributes, and text content.
-
-Supports manual element editing, addition, and deletion.
-
-💡 This class may be deprecated or transitioned to support advanced tree-based editing.
-
-3. XMLReader.py
-Purpose: Original single-file implementation bundling many GUI features.
-
+mainWindow.pyPurpose: Main editor window managing all tabs and interactions.
+Key Class: MainWindow
+__init__(xml_path): Initializes the window, loads XML file via XMLManager, sets up the user interface layout and tabs.
+initUI(): Builds UI components including tabbed views for each parameter category, buttons for loading and saving files.
+load_views(): Refreshes the main view, layer view, and material view with the latest XML data.
+load_xml(): Opens a file dialog to select and load a new XML file.
+save_xml(): Opens a file dialog to save the edited XML file.
+Supporting Classes: BaseEditor, ParameterDialog
+layerWindow.pyPurpose: Popup dialog for editing attributes of a single layer.
+Key Class: LayerWindow
+__init__(layer_data, materials, callback, index): Initializes form fields pre-filled with existing layer data. Lists materials in a dropdown.
+save_changes(): Validates input, updates the layer dictionary, and calls the provided callback function.
+layerEditor.pyPurpose: Inline layer editor widget showing all layers.
+Key Class: LayerEditorWidget
+__init__(): Sets up layout, add layer button, and tooltip checkbox.
+load_data(manager): Loads layer data from XMLManager, creates form fields for each layer.
+add_layer(): Adds a default layer to the XML structure.
+refresh(): Reloads the layer list display.
+materialsWindow.pyPurpose: Viewer for material properties using simple popup dialogs.
 Key Classes:
-
-Layer, Material: Basic data structures.
-
-XMLReader: XML file import wrapper using lxml.etree.
-
-InitialWindow: GUI launcher (legacy version).
-
-LayerWindow: Popup editor for layer attributes.
-
-MainWindow:
-
-Full-featured parameter editor.
-
-Dynamic combo box loads different XML sections (e.g., GateBias, LayeredStructure).
-
-Supports adding/removing layers and materials, writing values, and validating types.
-
-Monolithic file — parts of this have been modularized in newer files like layerWindow.py, xmlManager.py.
-
-4. materialsWindow.py
-Purpose: Read-only pop-up dialog for inspecting material properties.
-
+MaterialDialog
+__init__(material): Displays material properties in a vertical layout.
+MaterialLookupWidget
+__init__(): Sets up layout and button list.
+load_data(manager): Loads material data into buttons.
+show_material(mat): Opens MaterialDialog for the selected material.
+materialLookup.pyPurpose: Editable material lookup and editor.
 Key Classes:
+MaterialLookupWidget
+__init__(): Creates layout, add button, and scroll area.
+load_data(manager): Populates list of materials with editable forms.
+add_material(): Opens EditableMaterialDialog for adding a new material.
+refresh(): Reloads material list.
+EditableMaterialDialog
+__init__(material, manager, index, on_update): Initializes editable form fields.
+save_material(): Saves material data either by updating or adding a material.
+xmlManager.pyPurpose: Backend class managing XML content.
+Key Class: XMLManager
+__init__(): Initializes XML tree placeholders.
+load_file(filepath): Loads and parses XML file into memory.
+save_file(filepath): Writes current XML tree back to file.
+get_layers(): Returns a list of layer elements.
+add_layer(layer_dict): Appends a new layer to the XML structure.
+update_layer(index, key, value): Updates an existing layer element.
+get_materials(): Returns a list of material elements.
+add_material(material_dict): Appends a new material.
+tooltipManager.pyPurpose: Shows contextual help tooltips.
+Key Functions:
+show_parameter_tooltip(widget, parameter_name): Displays a single tooltip.
+show_parameter_tooltip_persistent(widget, label, duration=60000): Displays a persistent tooltip until timeout.
+ParameterDocs.pyPurpose: Central dictionary for parameter explanations.
+Key Variable: parameter_docs
+Contains key-value pairs where keys are XML parameter names and values are human-readable descriptions.- Purpose: Main editor window.
+Key Class: MainWindow
+Methods: initUI(), load_xml(), save_xml(), load_views().
+Supporting Classes: BaseEditor, ParameterDialog
+layerWindow.pyPurpose: Edit popup dialog for individual layers.
+Key Class: LayerWindow
+Methods: save_changes().
+layerEditor.pyPurpose: Inline layer editing.
+Key Class: LayerEditorWidget
+Methods: load_data(), add_layer(), refresh().
+materialsWindow.pyPurpose: Material property viewer.
+Key Class: MaterialDialog, MaterialLookupWidget
+Methods: load_data(), show_material().
+materialLookup.pyPurpose: Editable material lookup UI.
+Key Class: MaterialLookupWidget, EditableMaterialDialog
+Methods: load_data(), add_material(), refresh().
+xmlManager.pyPurpose: XML file handling backend.
+Key Class: XMLManager
+Methods: load_file(), save_file(), get_layers(), get_materials(), add_layer(), add_material(), update_layer().
+tooltipManager.pyPurpose: Tooltip display logic.
+Key Functions: show_parameter_tooltip(), show_parameter_tooltip_persistent().
+ParameterDocs.pyPurpose: Tooltip text database.
+Key Variable: parameter_docs
 
-MaterialDialog: QDialog that lists all fields for a material.
+Usage WorkflowLaunch application.
+Select a default or custom XML file.
+Edit parameters using tabbed sections.
+Add/remove layers or materials as needed.
+Save edited XML file.
 
-MaterialLookupWidget:
+To-Do / SuggestionsAdd scroll support to LayerWindow and MaterialDialog
 
-Lists materials as buttons.
+Create tabbed or collapsible UI for better navigation
+Add global undo/redo for XML changes
+Allow search/filter for parameters
 
-Loads material data via XMLManager.
-
-Launches MaterialDialog on button click.
-
-5. materialLookup.py
-Purpose: Alternative implementation of a Material Lookup interface.
-
-Key Class:
-
-MaterialLookupWidget:
-
-Similar to materialsWindow.py, includes QGroupBox with material info shown when a material is selected.
-
-6. layerWindow.py
-Purpose: Layer edit popup dialog.
-
-Key Class:
-
-LayerWindow:
-
-Allows users to edit name, materialType, height, panelDensity, and localWaveCalcType.
-
-Calls a callback with updated data for integration with MainWindow.
-
-7. layerEditor.py
-Purpose: Main widget to display/edit multiple layers inline.
-
-Key Class:
-
-LayerEditorWidget:
-
-Displays all layers with form fields.
-
-Updates layer attributes directly via XMLManager.update_layer.
-
-8. xmlManager.py
-Purpose: Backend handler for loading, saving, and updating XML content.
-
-Key Class:
-
-XMLManager:
-
-load_file(), save_file() to handle XML I/O.
-
-get_layers(), get_materials() for retrieving editable elements.
-
-update_layer() to change individual layer parameters.
-
-Key XML Files
-DotArray2.xml
-Main simulation input file. Contains:
-
-Physical parameters (e.g., gate bias, boundary conditions)
-
-Material definitions
-
-Layered structure
-
-Domain-specific subsettings
-
-Defaults.xml
-Used as a GUI configuration and template.
-
-Stores:
-
-Editor preferences (font, last file path)
-
-Default simulation parameters
-
-Locked materials
-
-List of "basic" sections for simple mode
-
-✅ Completed Features
-GUI for default/custom XML file selection
-
-Drag and drop support
-
-Tabbed section display (via combo box)
-
-Material and Layer editor windows
-
-Input validation (e.g., numerical types)
-
-Dynamic XML section updates
-
-File saving with validation
-
-Split between monolithic legacy (XMLReader.py) and modular modern architecture (xmlManager.py, initialWindow.py, etc.)
-
-🛠️ Next Steps
-🎨 UI/UX Improvements
- Add scroll support to LayerWindow and MaterialDialog
-
- Improve layout scalability for large XMLs
-
- Create tabbed or collapsible UI for better navigation
-
-🔧 Features
- Add global undo/redo for XML changes
-
- Allow search/filter for parameters
-
- Preview plots or layer geometry (via .cif)
-
-🔍 Backend
- Modularize XMLReader.py completely
-
- Add unit tests for xmlManager.py
-
- Add support for "less-used" or advanced parameters toggle
-
-
-
-
-
+Add unit tests for xmlManager.py
+Add support for "less-used" or advanced parameters toggle

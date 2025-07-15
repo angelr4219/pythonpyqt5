@@ -6,17 +6,20 @@ A modular Python GUI for editing DotArray2 simulation input files (`DotArray2.xm
 
 ## Features (As of July 2025)
 
-- Load default/custom DotArray2 XML input files.
-- Drag and drop `.xml` file support.
-- Tabbed editor layout:
-  - **Full XML View** (read/write).
-  - **Layer Editor** with inline editing and popup dialogs.
-  - **Material Lookup** with editable material attributes.
-- Built-in input validation for numerical fields.
-- Modular backend architecture:
-  - Uses `xmlManager.py` for all XML I/O and updates.
-  - GUI logic separated into `initialWindow.py`, `mainWindow.py`, etc.
-- One-click executable packaging ready.
+Load, edit, and save XML files structured like DotArray2.xml
+View and edit simulation parameters grouped into categories:
+Run Parameters
+Gate Bias
+Transverse Meshing
+Layered Structure
+MultiDomain Settings
+Material List
+Auto Tuning & Related
+Add, edit, and delete layers
+Add and edit materials
+Persistent tooltips with parameter documentation
+Drag-and-drop XML file loading
+Default file loading with last file recall
 
 ---
 
