@@ -3,14 +3,15 @@ from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QFormLayout, QLabel, QLineEdit,
     QComboBox, QPushButton, QMessageBox, QWidget, QScrollArea
 )
-#testing againsdfgsdfg
+
+
 class LayerWindow(QDialog):
     def __init__(self, layer_data, materials, callback, index):
         super().__init__()
         self.setWindowTitle(f"Edit Layer {index + 1}")
         self.callback = callback
         self.index = index
-        test = "test"
+        
 
         self.layout = QVBoxLayout()
         self.form = QFormLayout()

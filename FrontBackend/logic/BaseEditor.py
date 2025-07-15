@@ -1,3 +1,4 @@
+# logic.baseeditor.py
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QFormLayout, QLabel, QLineEdit,
     QGroupBox, QScrollArea, QCheckBox, QMainWindow,   QTabWidget,

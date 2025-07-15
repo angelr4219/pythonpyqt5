@@ -64,9 +64,16 @@ class LayerEditorWidget(QWidget):
         return lambda: (self.manager.delete_layer(index), self.load_data(self.manager))
 
     def add_layer(self):
-        if self.manager:
-            self.manager.add_layer()
-            self.load_data(self.manager)
+       if self.manager:
+        default_layer = {
+            "name": "NewLayer",
+            "materialType": "DefaultMaterial",
+            "height": "10",
+            "panelDensity": "1.0",
+            "localWaveCalcType": "none"
+        }
+        self.manager.add_layer(default_layer)
+        self.load_data(self.manager)
 
     def refresh(self):
         self.load_data(self.manager)

@@ -1,3 +1,4 @@
+# gui.gatebiasinterfaceeditor.py
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QGroupBox, QFormLayout, QLabel,
     QLineEdit, QCheckBox

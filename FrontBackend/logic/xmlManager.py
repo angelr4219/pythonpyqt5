@@ -23,6 +23,19 @@ class XMLManager:
             print("Warning: No <LayeredStructure> found in XML.")
             return []
         return ls.findall("Layer")
+    def add_layer(self, layer_dict):
+        ls = self.root.find("./LayeredStructure")
+        if ls is None:
+            print("[x] No <LayeredStructure> found in XML.")
+            return
+        new_elem = ET.Element("Layer")
+        for key, value in layer_dict.items():
+            sub_elem = ET.Element(key)
+            sub_elem.set("value", value)
+            new_elem.append(sub_elem)
+        ls.append(new_elem)
+        print("[ok] Added new layer.")
+
 
     def get_materials(self):
         ml = self.root.find("./MaterialList")

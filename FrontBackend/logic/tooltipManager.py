@@ -1,3 +1,4 @@
+#logic.tooltip.py
 from PyQt5.QtWidgets import QToolTip
 from PyQt5.QtCore import QPoint,QTimer
 from logic.ParameterDocs import parameter_docs
@@ -11,19 +12,18 @@ def show_parameter_tooltip(widget, parameter_name):
 
 
 
-def show_parameter_tooltip_persistent(widget, parameter_name):
-    from logic.ParameterDocs import parameter_docs
+def show_parameter_tooltip_persistent(widget, label, duration=60000):
     global _active_timer
 
-    def refresh_tooltip():
-        message = parameter_docs.get(parameter_name, f"No documentation found for {parameter_name}.")
-        QToolTip.showText(widget.mapToGlobal(QPoint(10, widget.height())), message, widget, widget.rect(), 2000)
+    try:
+        if _active_timer is not None and _active_timer.isActive():
+            _active_timer.stop()
+    except RuntimeError:
+        _active_timer = None
 
-    if _active_timer:
-        _active_timer.stop()
+    QToolTip.showText(widget.mapToGlobal(widget.rect().bottomLeft()), label, widget)
 
     _active_timer = QTimer(widget)
-    _active_timer.timeout.connect(refresh_tooltip)
-    _active_timer.start(1500)  # Refresh every 1.5 seconds
-
-    widget.destroyed.connect(_active_timer.stop)
+    _active_timer.setSingleShot(True)
+    _active_timer.timeout.connect(lambda: QToolTip.hideText())
+    _active_timer.start(duration)

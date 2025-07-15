@@ -1,4 +1,4 @@
-# logic/material_lookup.py
+# gui.materials window.py
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QGroupBox, QDialog, QCheckBox
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QScrollArea, QWidget

@@ -1,3 +1,4 @@
+# gui.mainwindow.py
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QFormLayout, QLabel, QLineEdit,
     QGroupBox, QScrollArea, QCheckBox, QMainWindow,   QTabWidget,
@@ -41,25 +42,39 @@ class ParameterDialog(QDialog):
         return event
 
 class BaseEditor(QWidget):
-    def __init__(self, manager):
+    def __init__(self, manager, section_group=1):
         super().__init__()
         self.manager = manager
         layout = QVBoxLayout()
         self.setLayout(layout)
 
-        self.sections = [
-            
+        self.section_group = {
+        1: [ "RunParameters",
+                "PoissonSolver_NumericalParameters",
+                "SP_Parameters",
+                "SingleParticleEigensystemParameters"
+                ],
+        2: ["GateBias"],
+        3: ["TransverseParameters",
+                "GateSmoothingParameters"],
+        4: ["LayeredStructure"],
+        5: [
+                "MultiDomainParameters",
+                "ComputationalSubdomains"
+            ],
+        6: ["MaterialList"],
+        7: [
             "AutoTuningData",
             "ImportExportAutoTuningState",
             "AutoTuningInput",
             "AutoTuningOutput",
             "EffectiveBC",
             "EffectiveBC_Parameters",
-            "GateBias",
-            "TransverseParameters",
             "GateSmoothingParameters",
             "InterfaceBCparameters"
-        ]
+            ]
+        }
+        self.sections = self.section_group.get(section_group, [])
 
         for section in self.sections:
             btn = QPushButton(section)
@@ -70,6 +85,7 @@ class BaseEditor(QWidget):
         dialog = ParameterDialog(self.manager, section_key)
         dialog.setMinimumSize(500, 600)
         dialog.exec_()
+
 
 class MainWindow(QMainWindow):
     def __init__(self, xml_path):
@@ -101,17 +117,16 @@ class MainWindow(QMainWindow):
         self.material_view = MaterialLookupWidget()
         self.base_editor = BaseEditor(self.manager)
 
+        self.run_parameters_editor = self.make_section(BaseEditor(self.manager, 1), "Run Parameters")
+        self.gate_bias_editor = self.make_section(BaseEditor(self.manager, 2), "Gate Bias")
+        self.transverse_editor = self.make_section(BaseEditor(self.manager, 3), "Transverse Meshing")
+        self.layered_structure_editor = self.make_section(BaseEditor(self.manager, 4), "Layered Structure")
+        self.multi_domain_editor = self.make_section(BaseEditor(self.manager, 5), "MultiDomain Settings")
+        self.material_list_editor = self.make_section(BaseEditor(self.manager, 6), "Material List")
+        self.boundary_conditions_editor = self.make_section(BaseEditor(self.manager, 7), "Boundary Conditions")
 
-        self.run_parameters_editor = self.make_parameter_tab("RunParameters", "Run Parameters")
-        self.gate_bias_editor = self.make_parameter_tab("GateBias", "Gate Bias")
-        self.transverse_editor = self.make_parameter_tab("TransverseParameters", "Transverse Meshing")
-        self.layered_structure_editor = self.make_parameter_tab("LayeredStructure", "Layered Structure")
-        self.multi_domain_editor = self.make_parameter_tab("MultiDomainParameters", "MultiDomain Settings")
-        self.material_list_editor = self.make_parameter_tab("MaterialList", "Material List")
-
-        self.base_editor = BaseEditor(self.manager)
-        self.auto_tuning_editor = self.make_section(self.base_editor, "Auto Tuning & Related")
-
+        self.auto_tuning_editor = self.make_section(BaseEditor(self.manager, 7), "Auto Tuning & Related")
+        
         self.layer_view = LayerEditorWidget()
         self.layer_view.load_data(self.manager)
         self.layers_editor = self.make_section(self.layer_view, "Layers & Materials")
@@ -119,8 +134,8 @@ class MainWindow(QMainWindow):
         self.material_view = MaterialLookupWidget()
         self.material_view.load_data(self.manager)
         self.material_lookup_editor = self.make_section(self.material_view, "Material Lookup")
-
-        # Now adding to tabs in clean one-line each:
+        
+        
         self.tabs.addTab(self.main_editor, "Main")
         self.tabs.addTab(self.run_parameters_editor, "Run Parameters")
         self.tabs.addTab(self.gate_bias_editor, "Gate Bias")
