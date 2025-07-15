@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (
 from logic.xmlManager import XMLManager
 from logic.layerEditor import LayerEditorWidget
 from logic.materialLookup import MaterialLookupWidget
-from logic.BaseEditor import ParameterEditor
+from logic.ParameterEditor import ParameterEditor
 from logic.tooltipManager import show_parameter_tooltip_persistent
 
 
@@ -47,6 +47,9 @@ class BaseEditor(QWidget):
         self.manager = manager
         layout = QVBoxLayout()
         self.setLayout(layout)
+        self.save_btn = QPushButton("Save Section Changes")
+        self.save_btn.clicked.connect(self.save_changes)
+        layout.addWidget(self.save_btn)
 
         self.section_group = {
         1: [ "RunParameters",
@@ -85,12 +88,17 @@ class BaseEditor(QWidget):
         dialog = ParameterDialog(self.manager, section_key)
         dialog.setMinimumSize(500, 600)
         dialog.exec_()
+    def save_changes(self):
+    # This triggers XMLManager’s save_file with the latest loaded path.
+        path = self.manager.file_name if hasattr(self.manager, "file_name") else "edited_output.xml"
+        self.manager.save_file(path)
+        QMessageBox.information(self, "Saved", f"Section changes saved to {path}")
 
 
 class MainWindow(QMainWindow):
     def __init__(self, xml_path):
         super().__init__()
-        self.setWindowTitle("DotArray2 XML Editor - Grouped Tabs")
+        self.setWindowTitle("DotArray2 XML Editor")
         self.setGeometry(200, 100, 900, 700)
 
         self.manager = XMLManager()
