@@ -1,120 +1,172 @@
-
 from PyQt5.QtWidgets import (
-    QMainWindow, QFileDialog, QWidget, QPushButton, QVBoxLayout,
-    QHBoxLayout, QLabel, QTextEdit, QMessageBox, QStackedLayout
+    QWidget, QVBoxLayout, QFormLayout, QLabel, QLineEdit,
+    QGroupBox, QScrollArea, QCheckBox, QMainWindow,   QTabWidget,
+     QPushButton, QTextEdit, QFileDialog, QHBoxLayout, QMessageBox, QDialog
 )
 from logic.xmlManager import XMLManager
-
 from logic.layerEditor import LayerEditorWidget
-from gui.layerWindow import LayerWindow
-
 from logic.materialLookup import MaterialLookupWidget
-from gui.materialsWindow import MaterialDialog
-#from gui.GateBiasInterfaceEditor import GateBiasEditor  git
-from gui.BaseEditor import ParameterEditor
+from logic.BaseEditor import ParameterEditor
+from logic.tooltipManager import show_parameter_tooltip_persistent
 
-from functools import partial
+
+class ParameterDialog(QDialog):
+    def __init__(self, manager, section_key):
+        super().__init__()
+        self.setWindowTitle(section_key)
+        layout = QVBoxLayout()
+        scroll_area = QScrollArea()
+        scroll_widget = QWidget()
+        form_layout = QFormLayout()
+        scroll_widget.setLayout(form_layout)
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(scroll_widget)
+        section = manager.root.find(f".//{section_key}")
+        if section is not None:
+            for elem in section:
+                label = QLabel(elem.tag)
+                value = QLineEdit(elem.attrib.get("value", ""))
+                value.focusInEvent = self.make_focus_event(value, elem.tag)
+                value.editingFinished.connect(lambda le=value, el=elem: el.set("value", le.text()))
+                form_layout.addRow(label, value)
+        else:
+            form_layout.addRow(QLabel("Section not found"))
+        layout.addWidget(scroll_area)
+        self.setLayout(layout)
+
+    def make_focus_event(self, widget, label):
+        def event(event):
+            show_parameter_tooltip_persistent(widget, label)
+            QLineEdit.focusInEvent(widget, event)
+        return event
+
+class BaseEditor(QWidget):
+    def __init__(self, manager):
+        super().__init__()
+        self.manager = manager
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        self.sections = [
+            
+            "AutoTuningData",
+            "ImportExportAutoTuningState",
+            "AutoTuningInput",
+            "AutoTuningOutput",
+            "EffectiveBC",
+            "EffectiveBC_Parameters",
+            "GateBias",
+            "TransverseParameters",
+            "GateSmoothingParameters",
+            "InterfaceBCparameters"
+        ]
+
+        for section in self.sections:
+            btn = QPushButton(section)
+            btn.clicked.connect(lambda checked, s=section: self.open_dialog(s))
+            layout.addWidget(btn)
+
+    def open_dialog(self, section_key):
+        dialog = ParameterDialog(self.manager, section_key)
+        dialog.setMinimumSize(500, 600)
+        dialog.exec_()
 
 class MainWindow(QMainWindow):
     def __init__(self, xml_path):
         super().__init__()
-        self.setWindowTitle("DotArray2 XML Editor")
+        self.setWindowTitle("DotArray2 XML Editor - Grouped Tabs")
         self.setGeometry(200, 100, 900, 700)
+
         self.manager = XMLManager()
-        self.file_name = xml_path.replace(".xml", "_edited.xml")
         self.manager.load_file(xml_path)
-
-        self.views = []
-        self.buttons = []
-
-        self.parameter_sections = [
-            "RunParameters",
-            "GateBias",
-            "TransverseParameters",
-            "LayeredStructure",
-            "MultiDomainParameters",
-            "MaterialList",
-        ]
+        self.file_name = xml_path.replace(".xml", "_edited.xml")
+        
 
         self.initUI()
         self.load_views()
 
     def initUI(self):
-        layout = QVBoxLayout()
+        self.central_widget = QWidget()
+        self.central_layout = QVBoxLayout()
+        self.tabs = QTabWidget()
 
-        self.file_button = QPushButton("Load XML File")
-        self.file_button.clicked.connect(self.load_xml)
+#main
+        self.main_editor = QTextEdit()
+        self.main_editor.setReadOnly(True)
+        self.main_editor.setPlainText(self.manager.dump_pretty())
 
-        self.download_button = QPushButton("Download Edited XML")
-        self.download_button.clicked.connect(self.save_xml)
-
+        self.tabs = QTabWidget()
         self.main_view = QTextEdit()
         self.layer_view = LayerEditorWidget()
         self.material_view = MaterialLookupWidget()
-        self.gatebias_view = ParameterEditor(self.manager, "GateBias", "Gate Bias Parameters")
-        self.gatebias_view = ParameterEditor(self.manager, "GateBias", "Gate Bias Parameters")
-        self.test_view = ParameterEditor(self.manager, "test", "test Parameters")
+        self.base_editor = BaseEditor(self.manager)
 
-        self.view_stack = QStackedLayout()
-        self.view_stack.addWidget(self.main_view)
-        self.view_stack.addWidget(self.layer_view)
-        self.view_stack.addWidget(self.material_view)
-        self.view_stack.addWidget(self.gatebias_view)
 
-        self.button_bar = QHBoxLayout()
-        self.main_btn = QPushButton("Main")
-        self.layer_btn = QPushButton("Edit Layers")
-        self.material_btn = QPushButton("Material Lookup")
-        self.gatebias_btn = QPushButton("Gate Bias")
-        self.test_btn = QPushButton("test")
+        self.run_parameters_editor = self.make_parameter_tab("RunParameters", "Run Parameters")
+        self.gate_bias_editor = self.make_parameter_tab("GateBias", "Gate Bias")
+        self.transverse_editor = self.make_parameter_tab("TransverseParameters", "Transverse Meshing")
+        self.layered_structure_editor = self.make_parameter_tab("LayeredStructure", "Layered Structure")
+        self.multi_domain_editor = self.make_parameter_tab("MultiDomainParameters", "MultiDomain Settings")
+        self.material_list_editor = self.make_parameter_tab("MaterialList", "Material List")
 
-         # Add dynamic Parameter Editors
-        for idx, section in enumerate(self.parameter_sections, start=1):
-            editor = ParameterEditor(self.manager, section, section)
-            self.views.append(editor)
-            self.view_stack.addWidget(editor)
+        self.base_editor = BaseEditor(self.manager)
+        self.auto_tuning_editor = self.make_section(self.base_editor, "Auto Tuning & Related")
 
-            btn = QPushButton(section)
-            btn.clicked.connect(lambda checked, i=idx: self.view_stack.setCurrentIndex(i))
-            self.button_bar.addWidget(btn)
-        
-        views = {
-            self.main_btn: 0,
-            self.layer_btn: 1,
-            self.material_btn: 2,
-            self.gatebias_btn: 3,
-            self.test_btn: 4,
-        }
-        for btn, idx in views.items():
-            btn.clicked.connect(partial(self.view_stack.setCurrentIndex, idx))
-            self.button_bar.addWidget(btn)
-        self.button_bar.addWidget(self.download_button)
+        self.layer_view = LayerEditorWidget()
+        self.layer_view.load_data(self.manager)
+        self.layers_editor = self.make_section(self.layer_view, "Layers & Materials")
 
-       
+        self.material_view = MaterialLookupWidget()
+        self.material_view.load_data(self.manager)
+        self.material_lookup_editor = self.make_section(self.material_view, "Material Lookup")
 
-        
+        # Now adding to tabs in clean one-line each:
+        self.tabs.addTab(self.main_editor, "Main")
+        self.tabs.addTab(self.run_parameters_editor, "Run Parameters")
+        self.tabs.addTab(self.gate_bias_editor, "Gate Bias")
+        self.tabs.addTab(self.transverse_editor, "Transverse Meshing")
+        self.tabs.addTab(self.layered_structure_editor, "Layered Structure")
+        self.tabs.addTab(self.multi_domain_editor, "MultiDomain Settings")
+        self.tabs.addTab(self.material_list_editor, "Material List")
+        self.tabs.addTab(self.auto_tuning_editor, "Auto Tuning & Related")
+        self.tabs.addTab(self.layers_editor, "Layers")
+        self.tabs.addTab(self.material_lookup_editor, "Material Lookup")
 
-        layout.addWidget(self.file_button)
-        layout.addLayout(self.button_bar)
-        layout.addLayout(self.view_stack)
+        self.central_layout.addWidget(self.tabs)
 
-        central = QWidget()
-        central.setLayout(layout)
-        self.setCentralWidget(central)
+        button_layout = QHBoxLayout()
+        load_button = QPushButton("Load XML File")
+        save_button = QPushButton("Save Edited XML")
+        load_button.clicked.connect(self.load_xml)
+        save_button.clicked.connect(self.save_xml)
+        button_layout.addWidget(load_button)
+        button_layout.addWidget(save_button)
+
+        self.central_layout.addLayout(button_layout)
+        self.central_widget.setLayout(self.central_layout)
+        self.setCentralWidget(self.central_widget)
+
+    def make_section(self, widget, title):
+        scroll = QScrollArea()
+        scroll.setWidget(widget)
+        scroll.setWidgetResizable(True)
+        return scroll
+
+    def make_parameter_tab(self, section_key, title):
+        editor = ParameterEditor(self.manager, section_key, title)
+        return self.make_section(editor, title)
 
     def load_views(self):
         self.main_view.setPlainText(self.manager.dump_pretty())
         self.layer_view.load_data(self.manager)
         self.material_view.load_data(self.manager)
-        self.gatebias_view.populate_fields()
 
     def load_xml(self):
         path, _ = QFileDialog.getOpenFileName(self, "Open XML", "", "XML Files (*.xml)")
-        if not path:
-            return
-        self.manager.load_file(path)
-        self.file_name = path.replace(".xml", "_edited.xml")
-        self.main_view.setPlainText(self.manager.dump_pretty())
+        if path:
+            self.manager.load_file(path)
+            self.file_name = path.replace(".xml", "_edited.xml")
+            self.load_views()
 
     def save_xml(self):
         path, _ = QFileDialog.getSaveFileName(self, "Save XML", self.file_name, "XML Files (*.xml)")

@@ -1,7 +1,9 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QFormLayout, QLabel, QLineEdit,
-    QGroupBox, QScrollArea, QCheckBox
+    QGroupBox, QScrollArea, QCheckBox, QMainWindow,   QTabWidget,
+     QPushButton, QTextEdit, QFileDialog, QHBoxLayout, QMessageBox, QDialog
 )
+
 from logic.tooltipManager import show_parameter_tooltip_persistent
 
 class ParameterEditor(QWidget):
@@ -71,3 +73,22 @@ class ParameterEditor(QWidget):
         node = self.root.find(tag)
         if node is not None:
             node.attrib["value"] = value
+    
+    def load_data(self, manager):
+        self.manager = manager
+        self.layout = QFormLayout()
+        self.setLayout(self.layout)
+
+        section = self.manager.root.find(f".//{self.section_key}")
+        if section is None:
+            self.layout.addRow(QLabel(f"No section {self.section_key} found."))
+            return
+
+        for elem in section:
+            tag = elem.tag
+            value = elem.attrib.get("value", "")
+            line_edit = QLineEdit(value)
+            line_edit.editingFinished.connect(
+                lambda le=line_edit, el=elem: el.set("value", le.text())
+            )
+            self.layout.addRow(QLabel(tag), line_edit)
