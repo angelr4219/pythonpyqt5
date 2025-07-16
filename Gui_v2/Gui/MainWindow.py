@@ -23,9 +23,9 @@ class MainWindow(QMainWindow):
         self.material_editor = MaterialEditorWidget()
 
         
-        self.tabs.addTab(self.parameter_editor, "Parameter Editor")
-        self.tabs.addTab(self.layer_editor, "Layer Editor")
-        self.tabs.addTab(self.material_editor, "Material Editor")
+        #self.tabs.addTab(self.parameter_editor, "Parameter Editor")
+        #self.tabs.addTab(self.layer_editor, "Layer Editor")
+        #self.tabs.addTab(self.material_editor, "Material Editor")
 
         self.layout.addWidget(self.tabs)
         button_layout = QHBoxLayout()
