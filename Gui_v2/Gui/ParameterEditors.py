@@ -1,6 +1,7 @@
 
 from PyQt5.QtWidgets import QWidget, QTabWidget, QVBoxLayout, QPushButton, QScrollArea, QFormLayout, QLabel, QLineEdit, QMessageBox
 from PyQt5.QtCore import pyqtSignal
+from Gui.ToolTips import setup_tooltips
 
 class ParameterEditors(QWidget):
     parameter_edited = pyqtSignal(str, str, str)
@@ -58,6 +59,8 @@ class ParameterEditors(QWidget):
                             label = QLabel(tag)
                             value_text = elem.attrib.get("value", "")
                             value = QLineEdit(value_text)
+                            
+                            setup_tooltips(value, tag)
                             value.editingFinished.connect(
                                 lambda _, s=section_key, k=tag, w=value: self.parameter_edited.emit(s, k, w.text())
                             )
