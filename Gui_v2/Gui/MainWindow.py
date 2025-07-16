@@ -1,7 +1,8 @@
+
 from PyQt5.QtWidgets import QMainWindow, QTabWidget, QVBoxLayout, QWidget, QPushButton, QHBoxLayout, QFileDialog, QApplication
 from PyQt5.QtCore import pyqtSlot
 from State.StateManager import StateManager
-from Gui.ParameterEditor import ParameterEditorWidget
+from Gui.ParameterEditors import ParameterEditors
 from Gui.LayerEditor import LayerEditorWidget
 from Gui.MaterialEditor import MaterialEditorWidget
 
@@ -16,16 +17,12 @@ class MainWindow(QMainWindow):
         self.layout = QVBoxLayout()
 
         self.tabs = QTabWidget()
-        self.parameter_editor = ParameterEditorWidget()
+        self.parameter_editor = ParameterEditors(self.state_manager)
+        self.tabs.addTab(self.parameter_editor, "Simulation Parameters")    
         self.layer_editor = LayerEditorWidget()
         self.material_editor = MaterialEditorWidget()
 
-        self.tabs.addTab(self.parameter_editor, "Parameter Editor")
-        self.tabs.addTab(self.parameter_editor, "Parameter r")
-        self.tabs.addTab(self.parameter_editor, "ParameEditor")
-        self.tabs.addTab(self.parameter_editor, "Parter Editor")
-        self.tabs.addTab(self.parameter_editor, "Prameter Editor")
-        self.tabs.addTab(self.parameter_editor, "Paasdfasdfameter Editor")
+        
         self.tabs.addTab(self.parameter_editor, "Parameter Editor")
         self.tabs.addTab(self.layer_editor, "Layer Editor")
         self.tabs.addTab(self.material_editor, "Material Editor")
