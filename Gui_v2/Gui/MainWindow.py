@@ -19,9 +19,10 @@ class MainWindow(QMainWindow):
         self.tabs = QTabWidget()
         self.parameter_editor = ParameterEditors(self.state_manager)
         self.tabs.addTab(self.parameter_editor, "Simulation Parameters")    
-        self.layer_editor = LayerEditorWidget()
-        self.material_editor = MaterialEditorWidget()
-
+        self.layer_editor = LayerEditorWidget(self.state_manager)
+        self.tabs.addTab(self.layer_editor, "layer ")    
+        self.material_editor = MaterialEditorWidget(self.state_manager)
+        self.tabs.addTab(self.material_editor, "materials")    
         
         #self.tabs.addTab(self.parameter_editor, "Parameter Editor")
         #self.tabs.addTab(self.layer_editor, "Layer Editor")

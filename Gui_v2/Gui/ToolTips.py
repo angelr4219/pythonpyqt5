@@ -12,7 +12,7 @@ def setup_tooltips(widget, parameter_name, duration=60000):
         _active_timer.stop()
     QToolTip.showText(widget.mapToGlobal(QPoint(10, widget.height())), message, widget)
 
-    _active_timer = QTimer(widget)
+    _active_timer = QTimer()
     _active_timer.setSingleShot(True)
     _active_timer.timeout.connect(QToolTip.hideText)
     _active_timer.start(duration)
