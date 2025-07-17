@@ -5,6 +5,7 @@ from State.StateManager import StateManager
 from Gui.ParameterEditors import ParameterEditors
 from Gui.LayerEditor import LayerEditorWidget
 from Gui.MaterialEditor import MaterialEditorWidget
+from Gui.ManualParameterEditors import ManualParameterEditors
 
 class MainWindow(QMainWindow):
     def __init__(self, state_manager):
@@ -23,10 +24,11 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(self.layer_editor, "layer ")    
         self.material_editor = MaterialEditorWidget(self.state_manager)
         self.tabs.addTab(self.material_editor, "materials")    
+
+        self.parameter_editor = ManualParameterEditors(self.state_manager)
+        self.tabs.addTab(self.parameter_editor, "Simulation Parameters")    
         
-        #self.tabs.addTab(self.parameter_editor, "Parameter Editor")
-        #self.tabs.addTab(self.layer_editor, "Layer Editor")
-        #self.tabs.addTab(self.material_editor, "Material Editor")
+ 
 
         self.layout.addWidget(self.tabs)
         button_layout = QHBoxLayout()
@@ -39,6 +41,14 @@ class MainWindow(QMainWindow):
         self.layout.addLayout(button_layout)
         self.central_widget.setLayout(self.layout)
         self.setCentralWidget(self.central_widget)
+
+        undo_button = QPushButton("Undo")
+        redo_button = QPushButton("Redo")
+        undo_button.clicked.connect(self.state_manager.undo)
+        redo_button.clicked.connect(self.state_manager.redo)
+        button_layout.addWidget(undo_button)
+        button_layout.addWidget(redo_button)
+
 
         # Connect state signals
         self.state_manager.file_loaded.connect(self.refresh_tabs)
