@@ -53,10 +53,22 @@ class StateManager(QObject):
             self.xml_manager.add_material(action["data"])
         else:
             print(f"[StateManager] Unknown action: {action}")
+        print(f"[StateManager] Undo stack before: {self.undo_stack}")
+        print(f"[StateManager] Redo stack before: {self.redo_stack}")
+        print(f"[StateManager] Undo stack before: {self.action_history}")
+        
 
         self.xml_updated.emit()
 
     def generate_reverse_action(self, action):
+        if action["type"] == "add_layer":
+            layers = self.xml_manager.get_layers()
+            if layers:
+                return {"type": "remove_layer", "index": len(layers) - 1}
+        elif action["type"] == "add_material":
+            materials = self.xml_manager.get_materials()
+            if materials:
+                return {"type": "remove_material", "index": len(materials) - 1}
         if action["type"] == "update_layer":
             current_data = self.xml_manager.get_layers()[action["index"]]
             return {"type": "update_layer", "index": action["index"], "data": current_data}
@@ -70,6 +82,8 @@ class StateManager(QObject):
     def undo(self):
         print(f"[StateManager] Undo stack before: {self.undo_stack}")
         print(f"[StateManager] Redo stack before: {self.redo_stack}")
+        print(f"[StateManager] Undo stack before: {self.action_history}")
+        
         if not self.undo_stack:
             print("Nothing to undo")
             return
@@ -81,6 +95,8 @@ class StateManager(QObject):
     def redo(self):
         print(f"[StateManager] Undo stack before: {self.undo_stack}")
         print(f"[StateManager] Redo stack before: {self.redo_stack}")
+        print(f"[StateManager] Undo stack before: {self.action_history}")
+        
         if not self.redo_stack:
             print("Nothing to redo")
             return

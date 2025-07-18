@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QTabWidget, QVBoxLayout, QScrollArea, QFormLayout, QLabel, QLineEdit
+from PyQt5.QtWidgets import QWidget, QMessageBox, QTabWidget, QVBoxLayout, QScrollArea, QFormLayout, QLabel, QLineEdit
 
 class ManualParameterEditors(QWidget):
     def __init__(self, state_manager):
@@ -8,53 +8,98 @@ class ManualParameterEditors(QWidget):
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
-        self.tab_widget = QTabWidget()
-        self.layout.addWidget(self.tab_widget)
+        self.main_tab_widget = QTabWidget()
+        self.layout.addWidget(self.main_tab_widget)
 
-        self.section_group = {
-            "Run Parameters": ["RunParameters", "PoissonSolver_NumericalParameters", "SP_Parameters", "SingleParticleEigensystemParameters"],
-            "Gate Bias": ["GateBias"],
-            "Auto Tuning Related": ["AutoTuningData", "ImportExportAutoTuningState", "AutoTuningInput", "AutoTuningOutput", "EffectiveBC", "EffectiveBC_Parameters", "GateSmoothingParameters", "InterfaceBCparameters"],
-            "Transverse Meshing": ["TransverseParameters", "GateSmoothingParameters"],
-            "MultiDomain Settings": ["MultiDomainParameters", "ComputationalSubdomains"]
+        self.group_structure = {
+            "Run Parameters": [
+                "RunParameters",
+                "PoissonSolver_NumericalParameters",
+                "SP_Parameters",
+                "SingleParticleEigensystemParameters"
+            ],
+            "Auto Tuning": [
+                "AutoTuningData",
+                "AutoTuningInput",
+                "AutoTuningOutput",
+                "ImportExportSPiterate",
+                "CreateInitialSPiterate"
+            ],
+            "Boundary Conditions": [
+                "InterfaceBCparameters",
+                "EffectiveBC_Parameters",
+                "LowerSurfaceBoundaryConditions"
+            ],
+            "Transverse Meshing and Gate Smoothing": [
+                "TransverseParameters",
+                "GateSmoothingParameters"
+            ],
+            "Import/Export Initial Solution": [
+                "ImportExportSPiterate",
+                "CreateInitialSPiterate"
+            ],
+            "Computational Subdomains and Settings": [
+                "MultiDomainParameters",
+                "ComputationalSubdomains"
+            ],
+            "Tunneling and Excluded Potential Calculation": [
+                "TunnelingRateCalculation",
+                "ExcludedPotentialCalculation"
+            ]
         }
 
-        self.populate_tabs()
+        self.populate_main_tabs()
 
-    def populate_tabs(self):
-        self.tab_widget.clear()
-
-        for tab_name, section_keys in self.section_group.items():
-            tab = QWidget()
-            tab_layout = QVBoxLayout()
-            scroll_area = QScrollArea()
-            scroll_area.setWidgetResizable(True)
-            scroll_widget = QWidget()
-            scroll_layout = QVBoxLayout()
-            scroll_widget.setLayout(scroll_layout)
-            scroll_area.setWidget(scroll_widget)
-            tab_layout.addWidget(scroll_area)
-            tab.setLayout(tab_layout)
-
+    def populate_main_tabs(self):
+        self.main_tab_widget.clear()
+        for group_name, section_keys in self.group_structure.items():
+            sub_tab_widget = QTabWidget()
             for section_key in section_keys:
-                section = self.state_manager.xml_manager.root.find(f".//{section_key}")
-                if section is not None and hasattr(section, '__iter__'):
-                    form = QFormLayout()
-                    group_box = QWidget()
-                    group_layout = QVBoxLayout()
-                    group_box.setLayout(group_layout)
-                    group_layout.addLayout(form)
+                editor_widget = self.create_section_editor(section_key)
+                sub_tab_widget.addTab(editor_widget, section_key)
+            self.main_tab_widget.addTab(sub_tab_widget, group_name)
 
-                    for elem in section:
-                        if hasattr(elem, 'tag') and isinstance(elem.tag, str):
-                            tag = str(elem.tag)
-                            if not elem.attrib.get("value"):
-                                continue
-                            label = QLabel(tag)
-                            value_text = elem.attrib.get("value", "")
-                            value = QLineEdit(value_text)
-                            form.addRow(label, value)
-                    scroll_layout.addWidget(group_box)
-                else:
-                    scroll_layout.addWidget(QLabel(f"Section {section_key} not found."))
-            self.tab_widget.addTab(tab, tab_name)
+    def create_section_editor(self, section_key):
+        widget = QWidget()
+        layout = QVBoxLayout()
+        widget.setLayout(layout)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        form_widget = QWidget()
+        form_layout = QFormLayout()
+        form_widget.setLayout(form_layout)
+        scroll.setWidget(form_widget)
+        layout.addWidget(scroll)
+
+        section = self.state_manager.xml_manager.root.find(f".//{section_key}")
+        if section is not None:
+            self.build_form_from_element(section, form_layout)
+        else:
+            form_layout.addRow(QLabel(f"Section {section_key} not found."))
+
+        return widget
+
+    def build_form_from_element(self, element, form_layout):
+        for child in element:
+            if list(child):
+                group_box = QWidget()
+                group_layout = QVBoxLayout()
+                group_box.setLayout(group_layout)
+                label = QLabel(child.tag)
+                group_layout.addWidget(label)
+                sub_form = QFormLayout()
+                self.build_form_from_element(child, sub_form)
+                group_layout.addLayout(sub_form)
+                form_layout.addRow(group_box)
+            elif hasattr(child, 'tag') and isinstance(child.tag, str):
+                label = QLabel(child.tag)
+                value = QLineEdit(child.attrib.get("value", ""))
+                form_layout.addRow(label, value)
+    def save_changes(self):
+        if self.state_manager.current_file:
+            self.state_manager.save_file()
+            QMessageBox.information(self, "Saved", f"All changes saved to {self.state_manager.current_file}")
+        else:
+            QMessageBox.warning(self, "Warning", "No file loaded.")
+
