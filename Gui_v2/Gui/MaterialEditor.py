@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QGroupBox, QDialog, QLineEdit, QFormLayout, QScrollArea
 from PyQt5.QtCore import pyqtSignal
-from Gui.ToolTips import setup_tooltips
+from Gui.ToolTips import show_parameter_tooltip_persistent 
 
 class MaterialEditorWidget(QWidget):
     material_updated = pyqtSignal(int, dict)
@@ -38,7 +38,7 @@ class MaterialEditorWidget(QWidget):
             for key, value in material.items():
                 label = QLabel(key)
                 input_field = QLineEdit(value)
-                setup_tooltips(input_field, key)
+                show_parameter_tooltip_persistent(input_field, key)
                 input_field.editingFinished.connect(
                     lambda _, i=idx, k=key, w=input_field: self.material_updated.emit(i, {k: w.text()})
                 )

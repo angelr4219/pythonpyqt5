@@ -23,7 +23,7 @@ def show_parameter_tooltip_persistent(widget, label, duration=60000):
 
     QToolTip.showText(widget.mapToGlobal(widget.rect().bottomLeft()), label, widget)
 
-    _active_timer = QTimer(widget)
+    _acAtive_timer = QTimer(widget)
     _active_timer.setSingleShot(True)
     _active_timer.timeout.connect(lambda: QToolTip.hideText())
     _active_timer.start(duration)

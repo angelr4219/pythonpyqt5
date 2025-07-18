@@ -2,16 +2,18 @@
 from PyQt5.QtWidgets import QMainWindow, QTabWidget, QVBoxLayout, QWidget, QPushButton, QHBoxLayout, QFileDialog, QApplication
 from PyQt5.QtCore import pyqtSlot
 from State.StateManager import StateManager
-from Gui.ParameterEditors import ParameterEditors
+#from Gui.ParameterEditors import ParameterEditors
 from Gui.LayerEditor import LayerEditorWidget
 from Gui.MaterialEditor import MaterialEditorWidget
 from Gui.ManualParameterEditors import ManualParameterEditors
+
+from Gui.StartHere import StartHereTab
 
 class MainWindow(QMainWindow):
     def __init__(self, state_manager):
         super().__init__()
         self.state_manager = state_manager
-        self.setWindowTitle("DotArray2 XML Editor V2")
+        self.setWindowTitle("DotArray2 XML Editor ")
         self.setGeometry(200, 100, 900, 700)
 
         self.central_widget = QWidget()
@@ -24,6 +26,8 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(self.layer_editor, "Layer Editor")    
         self.material_editor = MaterialEditorWidget(self.state_manager)
         self.tabs.addTab(self.material_editor, "Materials Look-Up")    
+        self.start_here = StartHereTab(self.state_manager)
+        self.tabs.addTab(self.start_here, "Instructions")
 
         self.parameter_editor = ManualParameterEditors(self.state_manager)
         self.tabs.addTab(self.parameter_editor, "Simulation Parameters")    

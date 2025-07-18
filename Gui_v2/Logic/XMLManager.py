@@ -12,7 +12,15 @@ class XMLManager:
     def save_file(self, filepath):
         ET.indent(self.tree, '    ')
         self.tree.write(filepath, encoding='utf-8', xml_declaration=True)
-
+    def get_raw_xml(self, target_tag=None):
+        if self.tree is not None:
+            if target_tag:
+                matches = self.root.findall(f".//{target_tag}")
+                if matches:
+                    return ET.tostring(matches[0], pretty_print=True, encoding="unicode")
+            return ET.tostring(self.tree, pretty_print=True, encoding="unicode")
+        return "No XML loaded."
+    
     def get_layers(self):
         layers = self.root.find("./LayeredStructure")
         return [self._element_to_dict(layer) for layer in layers.findall("Layer")]

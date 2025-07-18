@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (
     QGroupBox, QLineEdit, QFormLayout, QMessageBox, QScrollArea, QCheckBox
 )
 from PyQt5.QtCore import pyqtSignal
-from Gui.ToolTips import setup_tooltips
+from Gui.ToolTips import show_parameter_tooltip_persistent 
 
 class LayerEditorWidget(QWidget):
     layer_updated = pyqtSignal(int, dict)
@@ -45,7 +45,7 @@ class LayerEditorWidget(QWidget):
                 label = QLabel(key)
                 input_field = QLineEdit(value)
                 if self.tooltip_checkbox.isChecked():
-                    setup_tooltips(input_field, key)
+                    show_parameter_tooltip_persistent(input_field, key)
                 input_field.editingFinished.connect(
                     lambda _, i=idx, k=key, w=input_field: self.layer_updated.emit(i, {k: w.text()})
                 )

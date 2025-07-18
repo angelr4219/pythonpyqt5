@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QMessageBox, QTabWidget, QVBoxLayout, QScrollArea, QFormLayout, QLabel, QLineEdit
+from PyQt5.QtWidgets import QWidget, QCheckBox ,QMessageBox, QTabWidget, QVBoxLayout, QScrollArea, QFormLayout, QLabel, QLineEdit
+
 
 class ManualParameterEditors(QWidget):
     def __init__(self, state_manager):
@@ -7,6 +8,10 @@ class ManualParameterEditors(QWidget):
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
+
+        self.tooltip_checkbox = QCheckBox("Show Tooltips")
+        self.tooltip_checkbox.setChecked(True)
+        self.layout.addWidget(self.tooltip_checkbox)
 
         self.main_tab_widget = QTabWidget()
         self.layout.addWidget(self.main_tab_widget)
