@@ -19,9 +19,10 @@ class InitialWindow(QMainWindow):
         self.label = QLabel("Drag and drop XML here")
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setStyleSheet("border: 2px dashed gray; padding: 20px;")
-        self.open_file_dialog()
+        #self.open_file_dialog()
         default_btn.clicked.connect(partial(self.launch_main_window, "assets/Defaults.xml"))
         custom_btn.clicked.connect(self.select_custom_xml)
+        
 
         container = QWidget()
         container.setLayout(layout)
@@ -41,6 +42,7 @@ class InitialWindow(QMainWindow):
         self.state_manager.open_file(xml_path)
         self.main_window = MainWindow(self.state_manager)
         self.main_window.show()
+        self.launch_main_windows(xml_path)
         self.close()
 
     def dragEnterEvent(self, event):

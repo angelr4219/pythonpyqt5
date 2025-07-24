@@ -1,13 +1,14 @@
 
-from PyQt5.QtWidgets import QMainWindow, QTabWidget, QVBoxLayout, QWidget, QPushButton, QHBoxLayout, QFileDialog, QApplication
+from PyQt5.QtWidgets import QMainWindow, QTabWidget, QVBoxLayout, QWidget, QPushButton, QHBoxLayout, QFileDialog, QApplication , QCheckBox , QLabel, QLineEdit , QFormLayout
 from PyQt5.QtCore import pyqtSlot
 from State.StateManager import StateManager
 #from Gui.ParameterEditors import ParameterEditors
 from Gui.LayerEditor import LayerEditorWidget
 from Gui.MaterialEditor import MaterialEditorWidget
 from Gui.ManualParameterEditors import ManualParameterEditors
-
+from Gui.ToolTips import setup_tooltips, show_parameter_tooltip_persistent , show_parameter_tooltip 
 from Gui.StartHere import StartHereTab
+from Logic.ParameterDocs import *
 
 class MainWindow(QMainWindow):
     def __init__(self, state_manager):
@@ -32,8 +33,31 @@ class MainWindow(QMainWindow):
         self.parameter_editor = ManualParameterEditors(self.state_manager)
         self.tabs.addTab(self.parameter_editor, "Simulation Parameters")    
         
- 
+         # Tooltip Toggle
+        self.tooltip_checkbox = QCheckBox("Show Tooltips")
+        self.tooltip_checkbox.setChecked(True)
+        self.layout.addWidget(self.tooltip_checkbox)
 
+        # Tooltip Demo Section (temporary example)
+        tooltip_demo_form = QFormLayout()
+        dummy_param_dict = {
+            "SCstopTolerance": "1.0e-9",
+            "RKinitTimestep": "0.5",
+            "RKmaxSteps": "50"
+        }
+        for param_name, param_value in dummy_param_dict.items():
+            label = QLabel(param_name)
+            edit = QLineEdit()
+            edit.setText(str(param_value))
+            
+            doc = ParameterDocs.get(param_name, f"No documentation for {param_name}")
+            edit.setToolTip(doc)  # native hover tooltip
+            if self.tooltip_checkbox.isChecked():
+                setup_tooltips(edit, param_name)  # persistent popup if enabled
+            
+            tooltip_demo_form.addRow(label, edit)
+
+        #load/Save
         self.layout.addWidget(self.tabs)
         button_layout = QHBoxLayout()
         load_btn = QPushButton("Load XML")
@@ -46,6 +70,7 @@ class MainWindow(QMainWindow):
         self.central_widget.setLayout(self.layout)
         self.setCentralWidget(self.central_widget)
 
+        #load/Save
         undo_button = QPushButton("Undo")
         redo_button = QPushButton("Redo")
         undo_button.clicked.connect(self.state_manager.undo)

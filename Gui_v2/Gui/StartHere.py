@@ -37,7 +37,7 @@ class StartHereTab(QWidget):
             "- 10.Material List: Browse material properties in a quick lookup window.\n\nView and edit the list of materials and their physical properties.\n"
             "- Layers: Add, remove, or modify layers within the Layered Structure interactively.\n"
 '''
-                ✅ Included in Description and Present in XML:
+                Included in Description and Present in XML:
 
                 RunParameters
 
@@ -79,7 +79,7 @@ class StartHereTab(QWidget):
 
                 MaterialList
 
-                ⚠️ Present in XML But Not Explicitly Listed in Description:
+                Present in XML But Not Explicitly Listed in Description:
 
                 GateBias
 
