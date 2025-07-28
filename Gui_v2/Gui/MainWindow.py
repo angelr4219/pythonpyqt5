@@ -9,6 +9,7 @@ from Gui.ManualParameterEditors import ManualParameterEditors
 from Gui.ToolTips import setup_tooltips, show_parameter_tooltip_persistent , show_parameter_tooltip 
 from Gui.StartHere import StartHereTab
 from Logic.ParameterDocs import *
+from Gui.LivePreview import LivePreviewWidget 
 
 class MainWindow(QMainWindow):
     def __init__(self, state_manager):
@@ -77,18 +78,17 @@ class MainWindow(QMainWindow):
         redo_button.clicked.connect(self.state_manager.redo)
         button_layout.addWidget(undo_button)
         button_layout.addWidget(redo_button)
-        
-        def save_xml(self):
-                self.apply_changes_to_xml()
-                path, _ = QFileDialog.getSaveFileName(self, "Save XML", "", "XML Files (*.xml)")
-                if path:
-                    self.state_manager.apply_change({"type": "generic_update"}, record_undo=False)
-                    self.state_manager.save_file(path)
+
 
 
         # Connect state signals
         self.state_manager.file_loaded.connect(self.refresh_tabs)
         self.state_manager.xml_updated.connect(self.refresh_tabs)
+        #preview
+        self.tab_widget = QTabWidget()
+        self.layout.addWidget(self.tab_widget)
+        preview_tab = LivePreviewWidget(self.state_manager)
+        self.tab_widget.addTab(preview_tab, "Preview XML")
 
     @pyqtSlot()
     def refresh_tabs(self):
@@ -97,7 +97,8 @@ class MainWindow(QMainWindow):
     def load_xml(self):
         path, _ = QFileDialog.getOpenFileName(self, "Open XML", "", "XML Files (*.xml)")
         if path:
-            self.state_manager.open_file(path)
+            self.state_manager.apply_change({"type": "generic_update"}, record_undo=False)
+            self.state_manager.save_file(path)
 
     def save_xml(self):
         self.apply_changes_to_xml()

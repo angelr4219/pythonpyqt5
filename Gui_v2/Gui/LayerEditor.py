@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QPushButton,
-    QGroupBox, QLineEdit, QFormLayout, QMessageBox, QScrollArea, QCheckBox
+    QWidget, QVBoxLayout, QLabel, QPushButton, QGroupBox, QLineEdit,
+    QFormLayout, QMessageBox, QScrollArea, QCheckBox, QHBoxLayout
 )
 from PyQt5.QtCore import pyqtSignal
-from Gui.ToolTips import show_parameter_tooltip_persistent 
+from Gui.ToolTips import show_parameter_tooltip_persistent
 
 class LayerEditorWidget(QWidget):
     layer_updated = pyqtSignal(int, dict)
@@ -11,17 +11,41 @@ class LayerEditorWidget(QWidget):
     def __init__(self, state_manager):
         super().__init__()
         self.state_manager = state_manager
+        self.edit_mode = False
+        self.show_display = True
+
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
+
+        # Toolbar
+        self.toolbar = QHBoxLayout()
+        self.layout.addLayout(self.toolbar)
+
+        self.present_btn = QPushButton("Present Layers")
+        self.present_btn.clicked.connect(self.load_data)
+        self.toolbar.addWidget(self.present_btn)
+
+        self.add_btn = QPushButton("Add Layer")
+        self.add_btn.clicked.connect(self.add_layer)
+        self.toolbar.addWidget(self.add_btn)
+
+        self.edit_btn = QPushButton("Toggle Edit Mode")
+        self.edit_btn.clicked.connect(self.toggle_edit_mode)
+        self.toolbar.addWidget(self.edit_btn)
+
+        self.delete_btn = QPushButton("Delete Last Layer")
+        self.delete_btn.clicked.connect(self.delete_last_layer)
+        self.toolbar.addWidget(self.delete_btn)
+
+        self.display_btn = QPushButton("Toggle Display")
+        self.display_btn.clicked.connect(self.toggle_display)
+        self.toolbar.addWidget(self.display_btn)
 
         self.tooltip_checkbox = QCheckBox("Show Tooltips")
         self.tooltip_checkbox.setChecked(True)
         self.layout.addWidget(self.tooltip_checkbox)
 
-        self.add_button = QPushButton("Add Layer")
-        self.add_button.clicked.connect(self.add_layer)
-        self.layout.addWidget(self.add_button)
-
+        # Scrollable content
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
         self.inner_widget = QWidget()
@@ -30,8 +54,9 @@ class LayerEditorWidget(QWidget):
         self.scroll_area.setWidget(self.inner_widget)
         self.layout.addWidget(self.scroll_area)
 
-        self.state_manager.set_unsaved_changes(True)
         self.state_manager.file_loaded.connect(self.load_data)
+        self.load_data()
+
 
     def load_data(self):
         self.inner_layout.setSpacing(10)
@@ -63,6 +88,22 @@ class LayerEditorWidget(QWidget):
             "localWaveCalcType": "none"
         }
         self.state_manager.apply_change({"type": "add_layer", "data": default_layer})
+        self.load_data()
+
+    def delete_last_layer(self):
+        layers = self.state_manager.xml_manager.get_layers()
+        if layers:
+            self.state_manager.apply_change({"type": "delete_layer", "index": len(layers) - 1})
+            self.load_data()
+        else:
+            QMessageBox.information(self, "No Layers", "No layers to delete.")
+
+    def toggle_edit_mode(self):
+        self.edit_mode = not self.edit_mode
+        self.load_data()
+
+    def toggle_display(self):
+        self.show_display = not self.show_display
         self.load_data()
 
     def refresh(self):

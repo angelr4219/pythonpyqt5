@@ -81,7 +81,11 @@ class XMLManager:
             if key in layer.attrib:
                 layer.set(key, value)
             else:
-                # fallback: add attribute if it doesn't exist
+                
                 layer.set(key, value)
         else:
             print(f"[XMLManager] Layer index {index} out of range.")
+    def get_pretty_xml(self):
+        if self.tree is not None:
+            return ET.tostring(self.tree, pretty_print=True).decode()
+        return ""
