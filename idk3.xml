@@ -6,10 +6,10 @@
             <waveFunSquaredPlotFlag value="true" type="bool"/>
         </OutputParameters>
         <SelfConsistentIteration>
-            <SCstopTolerance value="1.000e-09" type="double"/>
+            <SCstopTolerance value="1.0e-9" type="double"/>
         </SelfConsistentIteration>
         <StabilizedRK>
-            <RKinitTimestep value="5.000e-01" type="double"/>
+            <RKinitTimestep value="0.5" type="double"/>
             <RKmaxSteps value="50" type="long"/>
             <RKdegree value="4" type="long"/>
             <verboseOutputFlag value="true" type="bool"/>
@@ -339,6 +339,13 @@
             <panelDensity value="1.0"/>
             <localWaveCalcType value="none"/>
         </Layer>
+        <Layer>
+            <name value="NewLayer"/>
+            <materialType value="DefaultMaterial"/>
+            <height value="10"/>
+            <panelDensity value="1.0"/>
+            <localWaveCalcType value="none"/>
+        </Layer>
     </LayeredStructure>
     <MaterialList>
         <Material>
@@ -431,60 +438,6 @@
             <effectiveMass_z value="0.000e+00" type="double"/>
             <bandShift value="0.000e+00" type="double"/>
             <backgroundDopingDensity value="0.000e+00" type="double"/>
-        </Material>
-        <Material>
-            <name value="NewMaterial"/>
-            <dielectricConstant value="1.0"/>
-            <effectiveMass_x value="0.1"/>
-            <effectiveMass_y value="0.1"/>
-            <effectiveMass_z value="0.1"/>
-            <bandShift value="0.0"/>
-            <backgroundDopingDensity value="0"/>
-        </Material>
-        <Material>
-            <name value="NewMaterial"/>
-            <dielectricConstant value="1.0"/>
-            <effectiveMass_x value="0.1"/>
-            <effectiveMass_y value="0.1"/>
-            <effectiveMass_z value="0.1"/>
-            <bandShift value="0.0"/>
-            <backgroundDopingDensity value="0"/>
-        </Material>
-        <Material>
-            <name value="NewMaterial"/>
-            <dielectricConstant value="1.0"/>
-            <effectiveMass_x value="0.1"/>
-            <effectiveMass_y value="0.1"/>
-            <effectiveMass_z value="0.1"/>
-            <bandShift value="0.0"/>
-            <backgroundDopingDensity value="0"/>
-        </Material>
-        <Material>
-            <name value="NewMaterial"/>
-            <dielectricConstant value="1.0"/>
-            <effectiveMass_x value="0.1"/>
-            <effectiveMass_y value="0.1"/>
-            <effectiveMass_z value="0.1"/>
-            <bandShift value="0.0"/>
-            <backgroundDopingDensity value="0"/>
-        </Material>
-        <Material>
-            <name value="NewMaterial"/>
-            <dielectricConstant value="1.0"/>
-            <effectiveMass_x value="0.1"/>
-            <effectiveMass_y value="0.1"/>
-            <effectiveMass_z value="0.1"/>
-            <bandShift value="0.0"/>
-            <backgroundDopingDensity value="0"/>
-        </Material>
-        <Material>
-            <name value="NewMaterial"/>
-            <dielectricConstant value="1.0"/>
-            <effectiveMass_x value="0.1"/>
-            <effectiveMass_y value="0.1"/>
-            <effectiveMass_z value="0.1"/>
-            <bandShift value="0.0"/>
-            <backgroundDopingDensity value="0"/>
         </Material>
     </MaterialList>
 </DotArray2_Parameters>

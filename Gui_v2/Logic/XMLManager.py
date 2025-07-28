@@ -10,8 +10,17 @@ class XMLManager:
         self.root = self.tree.getroot()
 
     def save_file(self, filepath):
-        ET.indent(self.tree, '    ')
-        self.tree.write(filepath, encoding='utf-8', xml_declaration=True)
+        if self.root is not None:
+            try:
+                print(f"[XMLManager] Saving file to: {filepath}")
+                tree = ET.ElementTree(self.root)  # Build tree from updated root
+                tree.write(filepath, pretty_print=True, xml_declaration=True, encoding="UTF-8")
+                print("[XMLManager] File saved successfully.")
+            except Exception as e:
+                print(f"[XMLManager] Error saving file: {e}")
+        else:
+            print("[XMLManager] No root element to save.")
+
     def get_raw_xml(self, target_tag=None):
         if self.tree is not None:
             if target_tag:
@@ -64,3 +73,15 @@ class XMLManager:
             sub_elem.set("value", value)
             new_material.append(sub_elem)
         material_list.append(new_material)
+        
+    def update_layer_parameter(self, index, key, value):
+        layers = self.root.findall(".//LayeredStructure/Layer")
+        if 0 <= index < len(layers):
+            layer = layers[index]
+            if key in layer.attrib:
+                layer.set(key, value)
+            else:
+                # fallback: add attribute if it doesn't exist
+                layer.set(key, value)
+        else:
+            print(f"[XMLManager] Layer index {index} out of range.")

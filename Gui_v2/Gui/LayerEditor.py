@@ -30,6 +30,7 @@ class LayerEditorWidget(QWidget):
         self.scroll_area.setWidget(self.inner_widget)
         self.layout.addWidget(self.scroll_area)
 
+        self.state_manager.set_unsaved_changes(True)
         self.state_manager.file_loaded.connect(self.load_data)
 
     def load_data(self):

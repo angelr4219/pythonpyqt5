@@ -29,9 +29,18 @@ class StateManager(QObject):
         if filepath is None:
             filepath = self.current_file
         if filepath:
+            print(f"[StateManager] Saving to {filepath}")
             self.xml_manager.save_file(filepath)
-            self.unsaved_changes = False
+            self.set_unsaved_changes(False)
             self.file_saved.emit(filepath)
+
+    def get_root(self):
+        if self.xml_manager.tree:
+            return self.xml_manager.tree.getroot()
+        return None
+    def has_tree(self):
+        return self.xml_manager.tree is not None
+
 
     def apply_change(self, action, record_undo=True):
         if record_undo:
@@ -53,10 +62,6 @@ class StateManager(QObject):
             self.xml_manager.add_material(action["data"])
         else:
             print(f"[StateManager] Unknown action: {action}")
-        print(f"[StateManager] Undo stack before: {self.undo_stack}")
-        print(f"[StateManager] Redo stack before: {self.redo_stack}")
-        print(f"[StateManager] Undo stack before: {self.action_history}")
-        
 
         self.xml_updated.emit()
 
@@ -69,7 +74,7 @@ class StateManager(QObject):
             materials = self.xml_manager.get_materials()
             if materials:
                 return {"type": "remove_material", "index": len(materials) - 1}
-        if action["type"] == "update_layer":
+        elif action["type"] == "update_layer":
             current_data = self.xml_manager.get_layers()[action["index"]]
             return {"type": "update_layer", "index": action["index"], "data": current_data}
         elif action["type"] == "update_material":
@@ -80,10 +85,6 @@ class StateManager(QObject):
             return action
 
     def undo(self):
-        print(f"[StateManager] Undo stack before: {self.undo_stack}")
-        print(f"[StateManager] Redo stack before: {self.redo_stack}")
-        print(f"[StateManager] Undo stack before: {self.action_history}")
-        
         if not self.undo_stack:
             print("Nothing to undo")
             return
@@ -93,10 +94,6 @@ class StateManager(QObject):
         print("Undo applied")
 
     def redo(self):
-        print(f"[StateManager] Undo stack before: {self.undo_stack}")
-        print(f"[StateManager] Redo stack before: {self.redo_stack}")
-        print(f"[StateManager] Undo stack before: {self.action_history}")
-        
         if not self.redo_stack:
             print("Nothing to redo")
             return
@@ -106,3 +103,11 @@ class StateManager(QObject):
 
     def has_unsaved_changes(self):
         return self.unsaved_changes
+    def refresh(self):
+        self.load_data()
+    def set_unsaved_changes(self, changed=True):
+        self.unsaved_changes = changed
+        self.xml_updated.emit()
+
+
+

@@ -5,6 +5,7 @@ class ManualParameterEditors(QWidget):
     def __init__(self, state_manager):
         super().__init__()
         self.state_manager = state_manager
+        self.xml_manager = self.state_manager.xml_manager
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
@@ -15,6 +16,8 @@ class ManualParameterEditors(QWidget):
 
         self.main_tab_widget = QTabWidget()
         self.layout.addWidget(self.main_tab_widget)
+        self.state_manager.set_unsaved_changes(True)
+        self.input_field = QLineEdit()
 
         self.group_structure = {
             "Run Parameters": [
@@ -52,8 +55,9 @@ class ManualParameterEditors(QWidget):
                 "ExcludedPotentialCalculation"
             ]
         }
-
+        
         self.populate_main_tabs()
+        self.input_field.textChanged.connect(self.on_value_changed)
 
     def populate_main_tabs(self):
         self.main_tab_widget.clear()
@@ -107,4 +111,25 @@ class ManualParameterEditors(QWidget):
             QMessageBox.information(self, "Saved", f"All changes saved to {self.state_manager.current_file}")
         else:
             QMessageBox.warning(self, "Warning", "No file loaded.")
+            
+    def apply_changes_to_xml(self):
+            if not self.state_manager.tree:
+                return
+
+            root = self.state_manager.tree.getroot()
+
+            for param_name, widget in self.param_widgets.items():
+                element = root.find(f".//*[@{param_name}]")  # fallback for bad xpath
+                if element is None:
+                    element = root.find(f".//{param_name}")
+                if element is not None:
+                    element.set("value", widget.text())
+    def on_value_changed(self, path, widget):
+        new_value = widget.text()
+        self.state_manager.xml_manager.set_value(path, new_value)
+        self.state_manager.set_unsaved_changes(True)
+
+
+
+
 

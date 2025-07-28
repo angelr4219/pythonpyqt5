@@ -42,7 +42,7 @@ class InitialWindow(QMainWindow):
         self.state_manager.open_file(xml_path)
         self.main_window = MainWindow(self.state_manager)
         self.main_window.show()
-        self.launch_main_windows(xml_path)
+        #self.launch_main_windows(xml_path)
         self.close()
 
     def dragEnterEvent(self, event):

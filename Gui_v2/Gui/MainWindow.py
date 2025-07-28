@@ -1,5 +1,5 @@
 
-from PyQt5.QtWidgets import QMainWindow, QTabWidget, QVBoxLayout, QWidget, QPushButton, QHBoxLayout, QFileDialog, QApplication , QCheckBox , QLabel, QLineEdit , QFormLayout
+from PyQt5.QtWidgets import QMainWindow, QTabWidget,QMessageBox , QVBoxLayout, QWidget, QPushButton, QHBoxLayout, QFileDialog, QApplication , QCheckBox , QLabel, QLineEdit , QFormLayout
 from PyQt5.QtCore import pyqtSlot
 from State.StateManager import StateManager
 #from Gui.ParameterEditors import ParameterEditors
@@ -34,28 +34,28 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(self.parameter_editor, "Simulation Parameters")    
         
          # Tooltip Toggle
-        self.tooltip_checkbox = QCheckBox("Show Tooltips")
+        self.tooltip_checkbox = QCheckBox("Show Tooltifps")
         self.tooltip_checkbox.setChecked(True)
         self.layout.addWidget(self.tooltip_checkbox)
 
-        # Tooltip Demo Section (temporary example)
-        tooltip_demo_form = QFormLayout()
-        dummy_param_dict = {
+         # Tooltip Demo Section (temporary example)
+        self.tooltip_demo_form = QFormLayout()
+        self.param_widgets = {}
+        self.dummy_param_dict = {
             "SCstopTolerance": "1.0e-9",
             "RKinitTimestep": "0.5",
             "RKmaxSteps": "50"
         }
-        for param_name, param_value in dummy_param_dict.items():
+        for param_name, param_value in self.dummy_param_dict.items():
             label = QLabel(param_name)
             edit = QLineEdit()
             edit.setText(str(param_value))
-            
-            doc = ParameterDocs.get(param_name, f"No documentation for {param_name}")
-            edit.setToolTip(doc)  # native hover tooltip
             if self.tooltip_checkbox.isChecked():
-                setup_tooltips(edit, param_name)  # persistent popup if enabled
-            
-            tooltip_demo_form.addRow(label, edit)
+                setup_tooltips(edit, param_name)
+            edit.setToolTip(param_name)
+            self.param_widgets[param_name] = edit
+            self.tooltip_demo_form.addRow(label, edit)
+
 
         #load/Save
         self.layout.addWidget(self.tabs)
@@ -77,6 +77,13 @@ class MainWindow(QMainWindow):
         redo_button.clicked.connect(self.state_manager.redo)
         button_layout.addWidget(undo_button)
         button_layout.addWidget(redo_button)
+        
+        def save_xml(self):
+                self.apply_changes_to_xml()
+                path, _ = QFileDialog.getSaveFileName(self, "Save XML", "", "XML Files (*.xml)")
+                if path:
+                    self.state_manager.apply_change({"type": "generic_update"}, record_undo=False)
+                    self.state_manager.save_file(path)
 
 
         # Connect state signals
@@ -86,7 +93,6 @@ class MainWindow(QMainWindow):
     @pyqtSlot()
     def refresh_tabs(self):
         print("Refreshing all tabs")
-        # Calls to refresh UI contents would go here
 
     def load_xml(self):
         path, _ = QFileDialog.getOpenFileName(self, "Open XML", "", "XML Files (*.xml)")
@@ -94,6 +100,18 @@ class MainWindow(QMainWindow):
             self.state_manager.open_file(path)
 
     def save_xml(self):
+        self.apply_changes_to_xml()
         path, _ = QFileDialog.getSaveFileName(self, "Save XML", "", "XML Files (*.xml)")
         if path:
             self.state_manager.save_file(path)
+
+    def apply_changes_to_xml(self):
+        if not self.state_manager.xml_manager.tree:
+            return
+
+        root = self.state_manager.xml_manager.tree.getroot()
+
+        for param_name, widget in self.param_widgets.items():
+            element = root.find(f".//{param_name}")
+            if element is not None:
+                element.set("value", widget.text())

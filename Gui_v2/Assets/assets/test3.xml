@@ -283,62 +283,6 @@
         </Layer>
         <baseLocation value="0.000e+00" type="double"/>
         <uniformQwellGridFlag value="true" type="bool"/>
-        <Layer>
-            <name value="NewLayer"/>
-            <materialType value="DefaultMaterial"/>
-            <height value="10"/>
-            <panelDensity value="1.0"/>
-            <localWaveCalcType value="none"/>
-        </Layer>
-        <Layer>
-            <name value="NewLayer"/>
-            <materialType value="DefaultMaterial"/>
-            <height value="10"/>
-            <panelDensity value="1.0"/>
-            <localWaveCalcType value="none"/>
-        </Layer>
-        <Layer>
-            <name value="NewLayer"/>
-            <materialType value="DefaultMaterial"/>
-            <height value="10"/>
-            <panelDensity value="1.0"/>
-            <localWaveCalcType value="none"/>
-        </Layer>
-        <Layer>
-            <name value="NewLayer"/>
-            <materialType value="DefaultMaterial"/>
-            <height value="10"/>
-            <panelDensity value="1.0"/>
-            <localWaveCalcType value="none"/>
-        </Layer>
-        <Layer>
-            <name value="NewLayer"/>
-            <materialType value="DefaultMaterial"/>
-            <height value="10"/>
-            <panelDensity value="1.0"/>
-            <localWaveCalcType value="none"/>
-        </Layer>
-        <Layer>
-            <name value="NewLayer"/>
-            <materialType value="DefaultMaterial"/>
-            <height value="10"/>
-            <panelDensity value="1.0"/>
-            <localWaveCalcType value="none"/>
-        </Layer>
-        <Layer>
-            <name value="NewLayer"/>
-            <materialType value="DefaultMaterial"/>
-            <height value="10"/>
-            <panelDensity value="1.0"/>
-            <localWaveCalcType value="none"/>
-        </Layer>
-        <Layer>
-            <name value="NewLayer"/>
-            <materialType value="DefaultMaterial"/>
-            <height value="10"/>
-            <panelDensity value="1.0"/>
-            <localWaveCalcType value="none"/>
-        </Layer>
     </LayeredStructure>
     <MaterialList>
         <Material>
@@ -431,60 +375,6 @@
             <effectiveMass_z value="0.000e+00" type="double"/>
             <bandShift value="0.000e+00" type="double"/>
             <backgroundDopingDensity value="0.000e+00" type="double"/>
-        </Material>
-        <Material>
-            <name value="NewMaterial"/>
-            <dielectricConstant value="1.0"/>
-            <effectiveMass_x value="0.1"/>
-            <effectiveMass_y value="0.1"/>
-            <effectiveMass_z value="0.1"/>
-            <bandShift value="0.0"/>
-            <backgroundDopingDensity value="0"/>
-        </Material>
-        <Material>
-            <name value="NewMaterial"/>
-            <dielectricConstant value="1.0"/>
-            <effectiveMass_x value="0.1"/>
-            <effectiveMass_y value="0.1"/>
-            <effectiveMass_z value="0.1"/>
-            <bandShift value="0.0"/>
-            <backgroundDopingDensity value="0"/>
-        </Material>
-        <Material>
-            <name value="NewMaterial"/>
-            <dielectricConstant value="1.0"/>
-            <effectiveMass_x value="0.1"/>
-            <effectiveMass_y value="0.1"/>
-            <effectiveMass_z value="0.1"/>
-            <bandShift value="0.0"/>
-            <backgroundDopingDensity value="0"/>
-        </Material>
-        <Material>
-            <name value="NewMaterial"/>
-            <dielectricConstant value="1.0"/>
-            <effectiveMass_x value="0.1"/>
-            <effectiveMass_y value="0.1"/>
-            <effectiveMass_z value="0.1"/>
-            <bandShift value="0.0"/>
-            <backgroundDopingDensity value="0"/>
-        </Material>
-        <Material>
-            <name value="NewMaterial"/>
-            <dielectricConstant value="1.0"/>
-            <effectiveMass_x value="0.1"/>
-            <effectiveMass_y value="0.1"/>
-            <effectiveMass_z value="0.1"/>
-            <bandShift value="0.0"/>
-            <backgroundDopingDensity value="0"/>
-        </Material>
-        <Material>
-            <name value="NewMaterial"/>
-            <dielectricConstant value="1.0"/>
-            <effectiveMass_x value="0.1"/>
-            <effectiveMass_y value="0.1"/>
-            <effectiveMass_z value="0.1"/>
-            <bandShift value="0.0"/>
-            <backgroundDopingDensity value="0"/>
         </Material>
     </MaterialList>
 </DotArray2_Parameters>
