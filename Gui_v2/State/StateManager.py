@@ -1,11 +1,13 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 from Logic.XMLManager import XMLManager
 import copy
+import difflib
 
 class StateManager(QObject):
     xml_updated = pyqtSignal()
     file_loaded = pyqtSignal(str)
     file_saved = pyqtSignal(str)
+    undo_state_changed = pyqtSignal(bool, bool)  # (has_undo, has_redo)
 
     def __init__(self):
         super().__init__()
@@ -19,6 +21,7 @@ class StateManager(QObject):
     def open_file(self, filepath):
         self.xml_manager.load_file(filepath)
         self.current_file = filepath
+        self.original_xml_string = self.xml_manager.get_pretty_xml()  
         self.unsaved_changes = False
         self.undo_stack.clear()
         self.redo_stack.clear()
@@ -31,6 +34,7 @@ class StateManager(QObject):
         if filepath:
             print(f"[StateManager] Saving to {filepath}")
             self.xml_manager.save_file(filepath)
+            self.original_xml_string = self.xml_manager.get_pretty_xml()  
             self.set_unsaved_changes(False)
             self.file_saved.emit(filepath)
 
@@ -42,6 +46,7 @@ class StateManager(QObject):
         return self.xml_manager.tree is not None
 
 
+    
     def apply_change(self, action, record_undo=True):
         if record_undo:
             reverse_action = self.generate_reverse_action(action)
@@ -50,8 +55,8 @@ class StateManager(QObject):
             self.redo_stack.clear()
 
         self.unsaved_changes = True
-
         action_type = action.get("type")
+
         if action_type == "update_layer":
             self.xml_manager.set_layer(action["index"], action["data"])
         elif action_type == "update_material":
@@ -60,8 +65,22 @@ class StateManager(QObject):
             self.xml_manager.add_layer(action["data"])
         elif action_type == "add_material":
             self.xml_manager.add_material(action["data"])
+        elif action_type == "delete_layer":
+            self.xml_manager.remove_layer(action["index"])
+        elif action_type == "delete_material":
+            self.xml_manager.remove_material(action["index"])
+        elif action_type == "update_layer_param":
+            self.xml_manager.update_layer_parameter(
+                action["index"], action["key"], action["value"]
+            )
+        elif action_type == "update_material_param":
+            self.xml_manager.update_material_parameter(
+                action["index"], action["key"], action["value"]
+            )
         else:
-            print(f"[StateManager] Unknown action: {action}")
+            print(f"[StateManager] Unknown action: {action}")\
+            
+        self.undo_state_changed.emit(bool(self.undo_stack), bool(self.redo_stack))
 
         self.xml_updated.emit()
 
@@ -79,7 +98,55 @@ class StateManager(QObject):
             return {"type": "update_layer", "index": action["index"], "data": current_data}
         elif action["type"] == "update_material":
             current_data = self.xml_manager.get_materials()[action["index"]]
-            return {"type": "update_material", "index": action["index"], "data": current_data}
+            return {"type": "update_material", "index": action["index"], "data": current_data}   
+        elif action["type"] == "delete_layer":
+            layers = self.xml_manager.get_layers()
+            if 0 <= action["index"] < len(layers):
+                deleted_layer = layers[action["index"]]
+                return {
+                    "type": "add_layer",
+                    "data": deleted_layer,
+                    "index": action["index"]  # preserve index for correct insertion
+                }
+        elif action["type"] == "delete_material":
+            materials = self.xml_manager.get_materials()
+            if 0 <= action["index"] < len(materials):
+                deleted_material = materials[action["index"]]
+                return {
+                    "type": "add_material",
+                    "data": deleted_material,
+                    "index": action["index"]
+                }
+        elif action["type"] == "update_layer_param":
+            current_value = self.xml_manager.get_layers()[action["index"]].get(action["key"])
+            return {
+                "type": "update_layer_param",
+                "index": action["index"],
+                "key": action["key"],
+                "value": current_value
+            }
+        elif action["type"] == "clone_layer":
+            return {
+                "type": "delete_layer",
+                "index": action["index"]
+            }
+
+        elif action["type"] == "clone_material":
+            return {
+                "type": "delete_material",
+                "index": action["index"]
+            }
+
+        elif action["type"] == "update_layer_param":
+            current_value = self.xml_manager.get_layers()[action["index"]].get(action["key"])
+            if record_undo:
+                reverse_action = {
+                    "type": "update_layer_param",
+                    "index": action["index"],
+                    "key": action["key"],
+                    "value": current_value
+                }
+                self.undo_stack.append(reverse_action)
         else:
             print("[StateManager] No reverse action for type:", action["type"])
             return action
@@ -108,6 +175,12 @@ class StateManager(QObject):
     def set_unsaved_changes(self, changed=True):
         self.unsaved_changes = changed
         self.xml_updated.emit()
+
+    def get_xml_diff(self):
+        original = self.original_xml_string.splitlines(keepends=True)
+        current = self.xml_manager.get_pretty_xml().splitlines(keepends=True)
+        return list(difflib.unified_diff(original, current, fromfile="Original", tofile="Current"))
+
 
 
 

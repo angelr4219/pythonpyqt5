@@ -1,4 +1,5 @@
 from lxml import etree as ET
+import copy
 
 class XMLManager:
     def __init__(self):
@@ -89,3 +90,78 @@ class XMLManager:
         if self.tree is not None:
             return ET.tostring(self.tree, pretty_print=True).decode()
         return ""
+    def get_all_param_names(self):
+        param_names = set()
+
+        def recurse(node):
+            if isinstance(node.tag, str) and 'value' in node.attrib:
+                param_names.add(node.tag)
+            for child in node:
+                recurse(child)
+
+        if self.tree is not None:
+            recurse(self.tree.getroot())
+
+        return sorted(param_names)
+    def get_param_to_section_map(self, full_path=False):
+        param_to_section = {}
+
+        def recurse(node, section_path=""):
+            tag = node.tag
+            current_path = f"{section_path} > {tag}" if section_path else tag
+
+            if isinstance(tag, str) and 'value' in node.attrib:
+                if full_path:
+                    param_to_section[tag] = current_path
+                else:
+                    param_to_section[tag] = section_path.split(" > ")[-1]
+
+            for child in node:
+                recurse(child, current_path)
+
+        if self.tree is not None:
+            recurse(self.tree.getroot())
+
+        return param_to_section
+        
+    def remove_layer(self, index):
+        layers_parent = self.root.find("./LayeredStructure")
+        layers = layers_parent.findall("Layer")
+        if 0 <= index < len(layers):
+            print(f"[XMLManager] Removing layer at index {index}")
+            layers_parent.remove(layers[index])
+
+    def remove_material(self, index):
+        materials_parent = self.root.find("./MaterialList")
+        materials = materials_parent.findall("Material")
+        if 0 <= index < len(materials):
+            print(f"[XMLManager] Removing material at index {index}")
+            materials_parent.remove(materials[index])
+        
+
+    def update_material_parameter(self, index, key, value):
+        materials = self.root.findall(".//MaterialList/Material")
+        if 0 <= index < len(materials):
+            material = materials[index]
+            for child in material:
+                if child.tag == key:
+                    child.set("value", value)
+                    break
+            else:
+                # Add new element if key doesn't exist
+                new_elem = ET.Element(key)
+                new_elem.set("value", value)
+                material.append(new_elem)
+        else:
+            print(f"[XMLManager] Material index {index} out of range.")
+    def set_value(self, xpath, value):
+
+        if not self.root:
+            print("[XMLManager] No XML loaded.")
+            return
+
+        element = self.root.find(xpath)
+        if element is not None:
+            element.set("value", value)
+        else:
+            print(f"[XMLManager] No element found at path: {xpath}")

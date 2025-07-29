@@ -1,9 +1,10 @@
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QPushButton, QGroupBox, QDialog,
+    QWidget, QVBoxLayout, QLabel, QPushButton, QGroupBox,
     QLineEdit, QFormLayout, QScrollArea, QHBoxLayout
 )
 from PyQt5.QtCore import pyqtSignal
 from Gui.ToolTips import show_parameter_tooltip_persistent
+
 
 class MaterialEditorWidget(QWidget):
     material_updated = pyqtSignal(int, dict)
@@ -17,7 +18,7 @@ class MaterialEditorWidget(QWidget):
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
-        # Top toolbar
+        # Toolbar
         toolbar = QHBoxLayout()
         self.layout.addLayout(toolbar)
 
@@ -67,10 +68,14 @@ class MaterialEditorWidget(QWidget):
                 label = QLabel(key)
                 input_field = QLineEdit(value)
                 input_field.setReadOnly(not self.edit_mode)
-
                 show_parameter_tooltip_persistent(input_field, key)
                 input_field.editingFinished.connect(
-                    lambda _, i=idx, k=key, w=input_field: self.material_updated.emit(i, {k: w.text()})
+                    lambda i=idx, k=key, w=input_field: self.state_manager.apply_change({
+                        "type": "update_material_param",
+                        "index": i,
+                        "key": k,
+                        "value": w.text()
+                    })
                 )
                 form.addRow(label, input_field)
 
@@ -107,3 +112,11 @@ class MaterialEditorWidget(QWidget):
 
     def refresh(self):
         self.load_data()
+    def update_material(self, index, key, value):
+        material_data = self.state_manager.xml_manager.get_materials()[index].copy()
+        material_data[key] = value
+        self.state_manager.apply_change({
+            "type": "update_material",
+            "index": index,
+            "data": material_data
+        })

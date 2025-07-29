@@ -55,29 +55,43 @@ class LayerEditorWidget(QWidget):
         self.layout.addWidget(self.scroll_area)
 
         self.state_manager.file_loaded.connect(self.load_data)
-        self.load_data()
-
-
-    def load_data(self):
-        self.inner_layout.setSpacing(10)
-        for i in reversed(range(self.inner_layout.count())):
-            self.inner_layout.itemAt(i).widget().setParent(None)
+        self.load_data(None)
+    def load_data(self, _):
+        # Clear current layout without resetting QWidget layout
+        while self.inner_layout.count():
+            child = self.inner_layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
 
         layers = self.state_manager.xml_manager.get_layers()
-        for idx, layer in enumerate(layers):
-            box = QGroupBox(f"Layer {idx + 1}")
-            form = QFormLayout()
-            for key, value in layer.items():
-                label = QLabel(key)
-                input_field = QLineEdit(value)
-                if self.tooltip_checkbox.isChecked():
-                    show_parameter_tooltip_persistent(input_field, key)
-                input_field.editingFinished.connect(
-                    lambda _, i=idx, k=key, w=input_field: self.layer_updated.emit(i, {k: w.text()})
+        for index, layer_data in enumerate(layers):
+            group_box = QGroupBox(f"Layer {index + 1}")
+            form_layout = QFormLayout()
+
+            for key, element in layer_data.items():
+                value = element.get("@_value") if isinstance(element, dict) else str(element)
+                line_edit = QLineEdit(value)
+                line_edit.editingFinished.connect(
+                    lambda i=index, k=key, w=line_edit: self.state_manager.apply_change({
+                        "type": "update_layer_param",
+                        "index": i,
+                        "key": k,
+                        "value": w.text()
+                    })
                 )
-                form.addRow(label, input_field)
-            box.setLayout(form)
-            self.inner_layout.addWidget(box)
+                form_layout.addRow(QLabel(key), line_edit)
+
+            group_box.setLayout(form_layout)
+            self.inner_layout.addWidget(group_box)
+
+    def update_layer(self, index, key, value):
+        layer_data = self.state_manager.xml_manager.get_layers()[index].copy()
+        layer_data[key] = value
+        self.state_manager.apply_change({
+            "type": "update_layer",
+            "index": index,
+            "data": layer_data
+    })
 
     def add_layer(self):
         default_layer = {
